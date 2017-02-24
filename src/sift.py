@@ -56,10 +56,15 @@ class Pyramid():
         return img
         
 class HarrisCorner():
-    def __init__(self,sigma=1.,threshold=1e-3):
+    def __init__(self,sigma=1.,threshold=0.1):
         self.epsilon = 1e-5
         self.sigma = sigma
         self.threshold = threshold
+    
+    def get_corners(self, image):
+        harris_response = self._harris_response(image)
+        idx_corners = self._find_harris_points(harris_response)
+        return idx_corners
         
     def _harris_response(self,img):
         im_x = gaussian_filter(img,(self.sigma,self.sigma),(0,1))
@@ -72,39 +77,28 @@ class HarrisCorner():
         return det / (trace + self.epsilon) 
     
     
-    def _find_harris_points(self,harris_response,distance_to_borders=3):
-        corner_threshold = harris_response.max() * self.threshold
+    def _find_harris_points(self, harris_response, distance_to_borders=3):
+        
+        corner_threshold = harris_response.max() * self.threshold   
         above_threshold = (harris_response > corner_threshold) #* 1
-
-        # get coordinates of candidates
-        coords = np.array(above_threshold.nonzero()).T
-
-        # ...and their values
-        candidate_values = [harris_response[c[0],c[1]] for c in coords]
-
-        # sort candidates
-        index = np.argsort(candidate_values)
-
-        # store allowed point locations in array
+        idx_above_thresh = np.where((harris_response > corner_threshold))
+        
         not_borders = np.zeros(harris_response.shape)
-        
         not_borders[distance_to_borders:-distance_to_borders,distance_to_borders:-distance_to_borders] = 1
-
-        # select the best points taking min_distance into account
-        filtered_coords = []
-        for coord in index:
-            if not_borders[coords[i,0],coords[i,1]] == 1:
-                filtered_coords.append(tuple(coords[i]))
-                
-                not_borders[(coords[i,0] - distance_to_borders):(coords[i,0] + distance_to_borders),
-                        (coords[i,1] - distance_to_borders):(coords[i,1] + distance_to_borders)] = 0
         
-        return filtered_coords      
+        idx_not_border = np.where(not_borders != 0)
+        
+        idx_valid = list()        
+        for i in zip(idx_above_thresh[0], idx_above_thresh[1]):
+            for j in zip(idx_not_border[0], idx_not_border[1]):
+                if i == j:
+                    idx_valid.append(i)             
+        return idx_valid     
     
-    
+        
 if __name__ == '__main__':
     #X_train, X_test, y_train = load_data()
-    id_img =  40
+    id_img =  108
     
     equalized_item = equalize_item(X_train[id_img],verbose=True)
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
@@ -116,6 +110,20 @@ if __name__ == '__main__':
             plt.figure()
             plt.imshow(output[i][j],cmap='gray')
             plt.title('Octave n° '+str(i)+ ' Scale n° '+str(j))
-    print(y_train[id_img])
-        
+            
+    test_image = output[0][3]
+    harris = HarrisCorner(threshold=0.98)
+    idx_corners = harris.get_corners(test_image)
     
+    plt.figure()
+    plt.imshow(test_image, cmap='gray')
+    idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
+    plt.scatter(idx_corners_x, idx_corners_y, marker='o', c='r', s=1)
+
+#%%
+test_image = output[0][3]
+harris = HarrisCorner(threshold=0.99)
+idx_corners = harris.get_corners(test_image)
+plt.figure()
+plt.imshow(im_res, cmap='gray')
+plt.scatter(idx_corners_x, idx_corners_y, marker='o', c='r', s=2)

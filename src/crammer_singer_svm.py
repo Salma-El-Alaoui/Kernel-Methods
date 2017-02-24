@@ -3,7 +3,6 @@
 
 """
 Created on Wed Feb 15 14:38:54 2017
-
 @author: salma
 Multiclass SVMs (Crammer-Singer).
 """
