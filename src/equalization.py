@@ -42,3 +42,35 @@ def plot_histograms(hist,hist_after_eq):
     plt.title('Histogram after equalization')
     
     plt.show()
+    
+def equalize_item(item,verbose=True):
+    img = np.zeros((32,32,3))
+
+    img[:,:,0] = item[:1024].reshape(32,32)
+    img[:,:,1] = item[1024:2048].reshape(32,32)
+    img[:,:,2] = item[2048:].reshape(32,32)
+    
+    min_r = np.ones((32,32))*img[:,:,0].min() 
+    min_g = np.ones((32,32))*img[:,:,1].min() 
+    min_b = np.ones((32,32))*img[:,:,2].min() 
+    img[:,:,0] -= min_r
+    img[:,:,1] -= min_g
+    img[:,:,2] -= min_b
+    img[:,:,0] *= 255.
+    img[:,:,1] *= 255.
+    img[:,:,2] *= 255.
+    
+    img_grey = np.uint8((0.2126 * img[:,:,0]) + np.uint8(0.7152 * img[:,:,1]) + np.uint8(0.0722 * img[:,:,2]))
+    input_grey = img_grey.copy()
+    
+    eq_img_grey, hist_grey, eq_hist_grey = equal_hist(input_grey)
+    
+    if verbose:
+        plt.figure()
+        plt.imshow(img_grey,cmap='gray',interpolation=None)
+        plt.title('Before equalization (grayscale)')
+        plt.figure()
+        plt.imshow(eq_img_grey,cmap='gray',interpolation=None)
+        plt.title('After equalization (grayscale)')
+    
+    return eq_img_grey
