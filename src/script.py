@@ -60,7 +60,6 @@ img[:,:,0] *= 255.
 img[:,:,1] *= 255.
 img[:,:,2] *= 255.
 
-
 #%%
 img_r = np.uint8(img[:,:,0])
 img_g = np.uint8(img[:,:,1])
@@ -132,12 +131,19 @@ eq_img_grey, hist_grey, eq_hist_grey = equal_hist(input_grey)
 
 # Histogram equalized image
 plt.figure()
-plt.imshow(img_grey,cmap='gray',interpolation="bilinear")
+plt.imshow(img_grey,cmap='gray',interpolation=None)
 plt.title('Before equalization (grayscale)')
 plt.figure()
-plt.imshow(eq_img_grey,cmap='gray',interpolation="bilinear")
+plt.imshow(eq_img_grey,cmap='gray',interpolation=None)
 plt.title('After equalization (grayscale)')
 
 #%%
 # Visualize histograms
 plot_histograms(hist_grey,eq_hist_grey)
+
+#%%
+from scipy.misc import imresize
+im_res = imresize(eq_img_grey,(64,64), interp="bilinear")
+plt.figure()
+plt.imshow(im_res,cmap='gray')
+plt.title('After equalization (grayscale)')
