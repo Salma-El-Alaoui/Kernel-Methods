@@ -70,3 +70,4 @@ idx_max_x, idx_max_y = [i[0] for i in maxima ], [i[1] for i in maxima]
 idx_min_x, idx_min_y = [i[0] for i in minima ], [i[1] for i in minima]
 plt.scatter(idx_max_y, idx_max_x, marker='o', c='r', s=1)
 plt.scatter(idx_min_y, idx_min_x, marker='o', c='g', s=1)
+plt.scatter([50],[100], marker='o', c='y', s=10)

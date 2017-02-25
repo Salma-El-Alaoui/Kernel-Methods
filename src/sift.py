@@ -121,9 +121,21 @@ if __name__ == '__main__':
     plt.scatter(idx_corners_x, idx_corners_y, marker='o', c='r', s=1)
 
 #%%
+test_zz = np.zeros((256,256))
+for i in range(50,100):
+    for j in range(200,250):
+        test_zz[i,j]=1
+harris = HarrisCorner(threshold=0.99)
+idx_corners = harris.get_corners(test_zz)
+idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
+plt.figure()
+plt.imshow(test_zz, cmap='gray')    
+plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=2)
+#%%       
 test_image = output[0][3]
 harris = HarrisCorner(threshold=0.99)
+idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
 idx_corners = harris.get_corners(test_image)
 plt.figure()
 plt.imshow(im_res, cmap='gray')
-plt.scatter(idx_corners_x, idx_corners_y, marker='o', c='r', s=2)
+plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=2)
