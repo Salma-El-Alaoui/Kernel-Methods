@@ -6,7 +6,7 @@ Created on Wed Feb 22 09:44:22 2017
 @author: camillejandot
 """
 import numpy as np
-from scipy.misc import imresize
+from scipy.misc import imresize,imread
 from scipy.ndimage.filters import gaussian_filter
 from equalization import equalize_item
 from image_utils import load_data
@@ -56,7 +56,7 @@ class Pyramid():
         return img
         
 class HarrisCorner():
-    def __init__(self,sigma=1.,threshold=0.1):
+    def __init__(self,sigma=1.,threshold=0.9):
         self.epsilon = 1e-5
         self.sigma = sigma
         self.threshold = threshold
@@ -74,8 +74,7 @@ class HarrisCorner():
         W_yy = gaussian_filter(im_y * im_y,self.sigma)
         det = W_xx * W_yy - W_xy**2
         trace = W_xx + W_yy
-        return det / (trace + self.epsilon) 
-    
+        return det / (trace + self.epsilon)
     
     def _find_harris_points(self, harris_response, distance_to_borders=3):
         
@@ -94,11 +93,34 @@ class HarrisCorner():
                 if i == j:
                     idx_valid.append(i)             
         return idx_valid     
-    
         
+class EdgeDetection():
+    def __init__(self,sigma=1.,threshold=500):
+        self.epsilon = 1e-5
+        self.sigma = sigma
+        self.threshold = threshold
+        
+    def _find_ratio(self,img):
+        im_x = gaussian_filter(img,(self.sigma,self.sigma),(0,1))
+        im_y = gaussian_filter(img,(self.sigma,self.sigma),(1,0))
+        W_xx = gaussian_filter(im_x * im_x,self.sigma)
+        W_xy = gaussian_filter(im_x * im_y,self.sigma)
+        W_yy = gaussian_filter(im_y * im_y,self.sigma)
+        det = W_xx * W_yy - W_xy**2
+        trace = W_xx + W_yy
+        return trace * trace / (det + self.epsilon)
+    
+    
+    def find_edges(self,img):
+        ratio = self._find_ratio(img) 
+        above_threshold = np.where(ratio > self.threshold)      
+        return above_threshold
+                
+    
+#%%        
 if __name__ == '__main__':
     #X_train, X_test, y_train = load_data()
-    id_img =  72
+    id_img =  108
     
     equalized_item = equalize_item(X_train[id_img],verbose=True)
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
@@ -125,12 +147,21 @@ test_zz = np.zeros((256,256))
 for i in range(50,100):
     for j in range(200,250):
         test_zz[i,j]=1
-harris = HarrisCorner(threshold=0.99)
+
+test_zz = imread('test.jpg')
+test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
+
+#%%
+harris = HarrisCorner(threshold=0.01)
 idx_corners = harris.get_corners(test_zz)
 idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
+edges = EdgeDetection().find_edges(test_zz)
+print(len(edges[0]))
 plt.figure()
 plt.imshow(test_zz, cmap='gray')    
-plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=2)
+plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
+#plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
+
 #%%       
 test_image = output[0][3]
 harris = HarrisCorner(threshold=0.99)
