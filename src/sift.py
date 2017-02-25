@@ -98,7 +98,7 @@ class HarrisCorner():
         
 if __name__ == '__main__':
     #X_train, X_test, y_train = load_data()
-    id_img =  108
+    id_img =  72
     
     equalized_item = equalize_item(X_train[id_img],verbose=True)
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
