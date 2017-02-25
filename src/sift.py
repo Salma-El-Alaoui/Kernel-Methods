@@ -11,6 +11,7 @@ from scipy.ndimage.filters import gaussian_filter
 from equalization import equalize_item
 from image_utils import load_data
 import matplotlib.pyplot as plt
+import time
 
 class Pyramid():
     def __init__(self,sigma=1.6,n_oct=4,k=np.sqrt(2),n_scales=5):
@@ -79,7 +80,6 @@ class HarrisCorner():
     def _find_harris_points(self, harris_response, distance_to_borders=3):
         
         corner_threshold = harris_response.max() * self.threshold   
-        above_threshold = (harris_response > corner_threshold) #* 1
         idx_above_thresh = np.where((harris_response > corner_threshold))
         
         not_borders = np.zeros(harris_response.shape)
@@ -87,15 +87,22 @@ class HarrisCorner():
         
         idx_not_border = np.where(not_borders != 0)
         
-        idx_valid = list()        
-        for i in zip(idx_above_thresh[0], idx_above_thresh[1]):
-            for j in zip(idx_not_border[0], idx_not_border[1]):
-                if i == j:
-                    idx_valid.append(i)             
+        not_border = np.zeros(harris_response.shape)
+        above_t = np.zeros(harris_response.shape)
+        
+        for i in range(len(idx_not_border[0])):
+            not_border[idx_not_border[0][i],idx_not_border[1][i]] = 1
+
+        for j in range(len(idx_above_thresh[0])):
+            above_t[idx_above_thresh[0][j],idx_above_thresh[1][j]] = 1
+
+        res = not_border * above_t
+        ret = np.where(res != 0)
+        idx_valid = list(zip(ret[0],ret[1]))
         return idx_valid     
         
 class EdgeDetection():
-    def __init__(self,sigma=1.,threshold=500):
+    def __init__(self,sigma=1.,threshold=1e-6):
         self.epsilon = 1e-5
         self.sigma = sigma
         self.threshold = threshold
@@ -106,6 +113,7 @@ class EdgeDetection():
         W_xx = gaussian_filter(im_x * im_x,self.sigma)
         W_xy = gaussian_filter(im_x * im_y,self.sigma)
         W_yy = gaussian_filter(im_y * im_y,self.sigma)
+
         det = W_xx * W_yy - W_xy**2
         trace = W_xx + W_yy
         return trace * trace / (det + self.epsilon)
@@ -113,7 +121,7 @@ class EdgeDetection():
     
     def find_edges(self,img):
         ratio = self._find_ratio(img) 
-        above_threshold = np.where(ratio > self.threshold)      
+        above_threshold = np.where(ratio > self.threshold * ratio.max())      
         return above_threshold
                 
     
@@ -160,7 +168,7 @@ print(len(edges[0]))
 plt.figure()
 plt.imshow(test_zz, cmap='gray')    
 plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
-#plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
+plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
 
 #%%       
 test_image = output[0][3]
