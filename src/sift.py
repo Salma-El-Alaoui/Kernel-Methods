@@ -124,7 +124,23 @@ class EdgeDetection():
         above_threshold = np.where(ratio > self.threshold * ratio.max())      
         return above_threshold
                 
-    
+class Contrast():
+    def __init__(self,threshold=0.3, eps=10**(-6)):
+        self.threshold = threshold
+        self.eps = eps
+        
+    def get_low_contrast(self, img):
+        low_contrast=[]
+        shape = img.shape
+        for i in range(1,shape[0]-1):
+            for j in range(1,shape[1]-1):
+                window = img[i-1:i+2,j-1:j+2]
+                mean = window.mean()
+                std = window.std()
+                if np.abs(img[i,j]-mean)/(std+self.eps)<self.threshold:
+                    low_contrast.append((i,j))
+        return low_contrast
+                
 #%%        
 if __name__ == '__main__':
     #X_train, X_test, y_train = load_data()
@@ -144,11 +160,16 @@ if __name__ == '__main__':
     test_image = output[0][3]
     harris = HarrisCorner(threshold=0.98)
     idx_corners = harris.get_corners(test_image)
-    
+    edges = EdgeDetection().find_edges(test_image)
+    contrast = Contrast().get_low_contrast(test_image)
     plt.figure()
-    plt.imshow(test_image, cmap='gray')
+    #plt.imshow(test_image, cmap='gray')
     idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
-    plt.scatter(idx_corners_x, idx_corners_y, marker='o', c='r', s=1)
+    idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
+    plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=0.1)
+    plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
+    plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
+
 
 #%%
 test_zz = np.zeros((256,256))
@@ -164,11 +185,15 @@ harris = HarrisCorner(threshold=0.01)
 idx_corners = harris.get_corners(test_zz)
 idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
 edges = EdgeDetection().find_edges(test_zz)
+contrast = Contrast().get_low_contrast(test_zz)
+idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
 print(len(edges[0]))
 plt.figure()
-plt.imshow(test_zz, cmap='gray')    
+plt.imshow(test_zz, cmap="gray")    
 plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
 plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
+plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
+
 
 #%%       
 test_image = output[0][3]
