@@ -7,4 +7,5 @@ Project for the course Kernel Methods for Machine Learning
 
 ## TODO
 
+- (opt.) More precise maxima detection using Taylor expansion
 - Comment what is done in histogram equalization 

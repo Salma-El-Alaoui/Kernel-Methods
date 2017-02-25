@@ -30,7 +30,7 @@ if __name__ == '__main__':
         for j in range(len(output[0])):
             plt.figure()
             plt.imshow(output[i][j],cmap='gray')
-            plt.title('Octave n° '+str(i)+ ' Scale n° '+str(j))
+            plt.title('Octave n° '+ str(i)+ ' Scale n° '+ str(j))
             
     test_image = output[0][3]
     harris = HarrisCorner(threshold=0.98)
