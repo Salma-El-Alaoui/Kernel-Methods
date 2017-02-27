@@ -11,18 +11,31 @@ from scipy.misc import imresize
 from scipy.ndimage.filters import gaussian_filter
 
 class Pyramid():
-    def __init__(self,sigma=1.6,n_oct=4,k=np.sqrt(2),n_scales=5):
+    def __init__(self, img, n_oct, k=np.sqrt(2), n_scales=5, sigma=1.6):
         self.sigma = sigma
         self.n_oct = n_oct
         self.k = k
         self.n_scales = n_scales
+        self.img = img
+        
+    def get_sigma(self):
+        return self.sigma
 
-    def create_diff_gauss(self,img): 
+    def get_nscales(self):
+        return self.n_scales
+
+    def create_diff_gauss(self):
+        img = self.img
         octaves = self._create_octaves(self._normalize(img))
         output = self._diff(self._blur_gauss(octaves))
         return output
-        
-    def _create_octaves(self,img):
+
+    def get_scales(self):
+        img = self.img
+        octaves = self._create_octaves(self._normalize(img))
+        return self._blur_gauss(octaves)
+
+    def _create_octaves(self, img):
         im_shape = img.shape
         list_img = []
         for i in range(self.n_oct):
@@ -36,7 +49,7 @@ class Pyramid():
         for o in octaves:
             list_scales = []
             for i in range(self.n_scales):
-                list_scales.append(gaussian_filter(o,self.sigma * (self.k**(i-3)))) # a changer eventuellement
+                list_scales.append(gaussian_filter(o, self.sigma * (self.k**(i-3)))) # a changer eventuellement
             list_scaled_octave.append(list_scales)
         return list_scaled_octave
         
