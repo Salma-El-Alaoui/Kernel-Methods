@@ -97,14 +97,52 @@ class ReferenceOrientation:
         sup_y = w - 3 * self.lambda_ori * sigma
         bool = (x >= inf_x ) and (x <= sup_x) and (y >= inf_y) and (y <= sup_y)
         return bool
+    
+    def get_histograms(self, keypoint, pyramid, gradient):
+        n_bins = 36
+        hist = np.zeros(n_bins)
+        patch = self._get_patch(self, keypoint, pyramid)
+        octave = keypoint[0] + 1
+        dog = keypoint[1]
+        scale = dog - 1
+        x = keypoint[2][0]
+        y = keypoint[2][1]
+        delta = octave + 1
+        sigma = pyramid.get_sigma() * 2**(scale / pyramid.get_nscales() - 3)
+        grad_m, grad_n = gradient[octave-1][scale-1]
+        for m,n in patch:
+            c = np.exp(-((np.abs(m*delta-x))**2-np.abs(n*delta-y))**2)/(2* self.lambda_ori**2 * sigma**2)\
+            * np.sqrt((np.abs(grad_m[m,n]))**2 + (np.abs(grad_n[m,n]))**2)
+            b = n_bins/(2*np.pi) * ((np.arctan2(grad_m[m,n], grad_n[m,n]))%(2* np.pi))
+            hist[int(b)]+=c
+        for i in range(6):
+            hist = np.convolve(hist,np.array([1,1,1])/3)
+        return hist
 
-
+    def gradient(self, scales):
+        l = []
+        for octave in scales:
+            for scale in octave[1:3]:
+                list_scales=[]
+                grad_m = np.zeros((scale.shape[0]-2,scale.shape[0]-2))
+                grad_n = np.zeros(grad_m.shape)
+                for m in range(scale.shape[0]-2):
+                    for n in range(scale.shape[1]-2):
+                        grad_m[m,n] = (scale[m+1,n]- scale[m-1,n])/2.
+                        grad_n[m,n] = (scale[m,n+1]- scale[m,n-1])/2.
+                list_scales.append((grad_m, grad_n))
+            l.append(list_scales)
+        return l
+                    
+                        
+                        
+                        
 # %%
 if __name__ == '__main__':
-    #X_train, X_test, y_train = load_data()
+    X_train, X_test, y_train = load_data()
     id_img =  108
     
-    #equalized_item = equalize_item(X_train[id_img],verbose=True)
+    equalized_item = equalize_item(X_train[id_img],verbose=True)
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
     
     pyramid = Pyramid(img=im_res, sigma=1.6, n_oct=4)
@@ -125,3 +163,10 @@ idx_min_x, idx_min_y = [i[0] for i in minima ], [i[1] for i in minima]
 plt.scatter(idx_max_y, idx_max_x, marker='o', c='r', s=1)
 plt.scatter(idx_min_y, idx_min_x, marker='o', c='g', s=1)
 plt.scatter([50],[100], marker='o', c='y', s=10)
+#%%
+ref = ReferenceOrientation()
+pyramid = Pyramid(img=im_res, sigma=1.6, n_oct=4)
+#output = pyramid.create_diff_gauss()
+scales = pyramid.get_scales()
+res = ref.gradient(scales)
+print(res.shape)
