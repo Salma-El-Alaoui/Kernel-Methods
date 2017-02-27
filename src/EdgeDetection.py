@@ -29,6 +29,7 @@ class EdgeDetection():
     
     def find_edges(self,img):
         ratio = self._find_ratio(img) 
-        above_threshold = np.where(ratio > self.threshold * ratio.max())      
-        return above_threshold
+        above_threshold = np.where(ratio > self.threshold * ratio.max())     
+        idx_valid = list(zip(above_threshold[0],above_threshold[1]))
+        return idx_valid
                 
