@@ -25,7 +25,7 @@ if __name__ == '__main__':
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
     
     pyramid = Pyramid(sigma=1.6)
-    output = pyramid.create_diff_gauss(im_res)
+    output = pyramid.create_diff_gauss()
     for i in range(len(output)):
         for j in range(len(output[0])):
             plt.figure()
