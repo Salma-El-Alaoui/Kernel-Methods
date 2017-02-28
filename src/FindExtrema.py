@@ -40,7 +40,6 @@ class FindExtrema():
             extrema_oct = []
             for i_dog,dog in enumerate(octave[1:-1]):
                 i_dog += 1
-                print("i_dog ",i_dog)
                 maxi =[]
                 mini =[]
                 extr =[]
@@ -66,11 +65,9 @@ class FindExtrema():
                 maxima_oct.append(maxi)
                 minima_oct.append(mini)
                 extrema_oct.append(extr)
-            print("maxima_oct  ",len(maxima_oct))
             all_maxima.append(maxima_oct)
             all_minima.append(minima_oct)
             all_extrema.append(extrema_oct)
-            print("all maxima   ",len(all_maxima))
         #print(len(all_minima))
             
         return all_maxima,all_minima, all_extrema
@@ -177,21 +174,20 @@ if __name__ == '__main__':
 #            plt.title('Octave n° '+str(i)+ ' Scale n° '+str(j))  
     find_extrema = FindExtrema()
     maxima, minima, extrema = find_extrema.find_extrema(output)
-    print("--maxima--")
-    print (len(maxima[0][0]))
-    print (len(minima[0][0]))
     
     bad_points = []
+    count_LC = 0
     for octave in output:
         list_oct = []
         for img in octave[1:3] :
             list_scale = []
-            harris = HarrisCorner(threshold=0.01)
+            harris = HarrisCorner(threshold=0.1)
             idx_corners = harris.get_corners(img)
             list_scale.extend(idx_corners)
             edges = EdgeDetection().find_edges(img)
             list_scale.extend(edges)
-            contrast = LowContrast().get_low_contrast(img)
+            contrast = LowContrast(threshold = 1).get_low_contrast(img)
+            count_LC += len(contrast)
             list_scale.extend(contrast)
             plt.figure()
             plt.imshow(img, cmap="gray")
@@ -203,6 +199,7 @@ if __name__ == '__main__':
             plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=1)
             list_oct.append(list_scale)
         bad_points.append(list_oct)
+    print("LowCount ",count_LC)
     print (len(bad_points))
     print (len(bad_points[0]))
     for i in range(len(bad_points)):
