@@ -11,72 +11,104 @@ from equalization import equalize_item
 from HarrisCorner import HarrisCorner
 from EdgeDetection import EdgeDetection
 from LowContrast import LowContrast
+from FindExtrema import FindExtrema
 from Pyramid import Pyramid
+from reference_orientation import ReferenceOrientation
 from image_utils import load_data
+import numpy as np
 import matplotlib.pyplot as plt
-
-
+#%%
+class Sift():
+     
+    def __init__(self, interp_size=256):
+        self.interp_size = interp_size
+        self.sigma_min = 0.8
+        self.n_octaves = 4
   
+ 
+    def perform_sift(self, image, verbose=False):
+        equalized_item = equalize_item(image, verbose=False)
+        im_res = imresize(equalized_item, (self.interp_size, self.interp_size), interp="bilinear")  
+        pyramid = Pyramid(img=im_res, sigma=self.sigma_min, n_oct=self.n_octaves)
+        dogs = pyramid.create_diff_gauss() 
+        find_extrema = FindExtrema()
+        extrema, extrema_flat = find_extrema.find_extrema(dogs)
+        print(".................Done computing extrema")
+        
+        # find bad points
+        bad_points = []
+        for o, octave in enumerate(dogs):
+            list_oct = []
+            for sc, img in enumerate(octave[1:3]) :
+                list_scale = []
+                harris = HarrisCorner(threshold=0.1)
+                idx_corners = harris.get_corners(img)
+                list_scale.extend(idx_corners)
+                edges = EdgeDetection().find_edges(img)
+                list_scale.extend(edges)
+                contrast = LowContrast(threshold = 0.6).get_low_contrast(img)
+                list_scale.extend(contrast)
+                
+                # plot bad points
+                
+                if verbose:
+                    plt.figure()
+                    plt.imshow(img, cmap="gray")
+                    idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
+                    idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
+                    idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
+                    # corners in blue, edges in red, low contrast points i  green
+                    s = 0.1 * 2**o
+                    plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=s)
+                    plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=s)
+                    plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)   
+                    plt.title(" Bad points for Octave " + str(o) +" Scale " + str(sc+1))
+                list_oct.append(list_scale)
+            bad_points.append(list_oct)       
+        print(".................Done computing bad points")
+        
+        # remove bad points from extrema
+        for i in range(len(bad_points)):
+            for j in range(len(bad_points[0])):
+                img = dogs[i][j+1] 
+                a = set(extrema[i][j])
+                b = set(bad_points[i][j])
+                extrema[i][j] = list(a - b)
+                if verbose:
+                    plt.figure()
+                    s = 0.1 * 2**i
+                    plt.axis('equal')
+                    idx_extrema_x, idx_extrema_y = [ind[0] for ind in extrema[i][j]], [ind[1] for ind in extrema[i][j]]
+                    plt.scatter(-1 * np.array(idx_extrema_y), idx_extrema_x, marker='o', c='b', s=s)
+                    plt.title("Extrema for Octave " + str(i) +" scale " + str(j+1))
+
+        print(".................Done Computing keypoints")
+        return pyramid, extrema_flat
+       
+            
+                
 if __name__ == '__main__':
     X_train, X_test, y_train = load_data()
     id_img =  108
+    image = X_train[id_img]
+    sift = Sift()
+    pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
+    #%%
+    ref = ReferenceOrientation(pyramid)
+    gradient = ref.gradient()
+    for i, ext in enumerate(extrema_flat):
+        if ref._is_inborder(ext):
+            print(ext)
+            hist = ref.get_histogram(ext, gradient)
+            if len(hist[hist!=0]) == 0:
+                print(" empty histogram")
+
+                
+                
+                
+    # Load toy image
+    #test_zz = imread('test.jpg')
+    #test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
     
-    equalized_item = equalize_item(X_train[id_img],verbose=True)
-    im_res = imresize(equalized_item,(256,256),interp="bilinear")
-    
-    pyramid = Pyramid(sigma=1.6)
-    output = pyramid.create_diff_gauss()
-    for i in range(len(output)):
-        for j in range(len(output[0])):
-            plt.figure()
-            plt.imshow(output[i][j],cmap='gray')
-            plt.title('Octave n° '+ str(i)+ ' Scale n° '+ str(j))
-            
-    test_image = output[0][3]
-    harris = HarrisCorner(threshold=0.98)
-    idx_corners = harris.get_corners(test_image)
-    edges = EdgeDetection().find_edges(test_image)
-    contrast = LowContrast().get_low_contrast(test_image)
-    plt.figure()
-    #plt.imshow(test_image, cmap='gray')
-    idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
-    idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
-    plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=0.1)
-    plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
-    plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
 
 
-#%% Load toy image
-
-#test_zz = np.zeros((256,256))
-#for i in range(50,100):
-#    for j in range(200,250):
-#        test_zz[i,j]=1
-
-test_zz = imread('test.jpg')
-test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
-
-#%% Test corners, edges and low contrast points detection o toy image
-harris = HarrisCorner(threshold=0.01)
-idx_corners = harris.get_corners(test_zz)
-idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
-edges = EdgeDetection().find_edges(test_zz)
-idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
-contrast = LowContrast().get_low_contrast(test_zz)
-idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
-print(len(edges[0]))
-plt.figure()
-plt.imshow(test_zz, cmap="gray")    
-plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
-plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=0.1)
-plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
-
-
-#%%       
-#test_image = output[0][3]
-#harris = HarrisCorner(threshold=0.99)
-#idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
-#idx_corners = harris.get_corners(test_image)
-#plt.figure()
-#plt.imshow(im_res, cmap='gray')
-#plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='r', s=2)
