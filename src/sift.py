@@ -61,13 +61,14 @@ harris = HarrisCorner(threshold=0.01)
 idx_corners = harris.get_corners(test_zz)
 idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
 edges = EdgeDetection().find_edges(test_zz)
-contrast = Contrast().get_low_contrast(test_zz)
+idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
+contrast = LowContrast().get_low_contrast(test_zz)
 idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
 print(len(edges[0]))
 plt.figure()
 plt.imshow(test_zz, cmap="gray")    
 plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
-plt.scatter(edges[1],edges[0], marker='o', c='r', s=0.1)
+plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=0.1)
 plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
 
 
