@@ -10,7 +10,8 @@ Multiclass SVMs (Crammer-Singer).
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-
+import time
+from sklearn.metrics.pairwise import rbf_kernel,linear_kernel
 
 def simplex_proj(v, z=1):
     n_features = v.shape[0]
@@ -25,18 +26,31 @@ def simplex_proj(v, z=1):
     
 
 class CrammerSingerSVM():
-    def __init__(self, C=1.0, max_iter=100, epsilon=0.01):
+    def __init__(self, C=1.0, kernel='linear',max_iter=100, epsilon=0.01,gamma=1.0):
         self.C = C
         self.max_iter = max_iter
         self.epsilon = epsilon
+        self.gamma = gamma
+        self.kernel = kernel
 
+        
     def _gradi(self, X, y, i):
         # TODO: replace here x_i^x_j by k(x_i, x_j) for a non-linear kernel (I think do the update using alpha instead of
         # W, but not sure (equation 4 in the paper)
-        g = np.dot(X[i], self.W.T) + 1
+        if self.kernel == 'linear':
+            g = np.dot(X[i], self.W.T) + 1
+        elif self.kernel== 'gaussian':
+            g = np.dot(self.alpha,self.K[:,i]) + 1
+        else:
+            print('Only linear and gaussian kernels implemented. Using linear kernel.')
+            g = np.dot(X[i], self.W.T) + 1
         g[y[i]] -= 1
         return g
 
+    def _gaussian_kernel(self,x,y):
+        return np.exp(-self.gamma*np.linalg.norm(x-y)**2)
+
+        
     def _getvi(self, g, y, i):
         min_side = np.inf
         for k in range(g.shape[0]):
@@ -63,11 +77,29 @@ class CrammerSingerSVM():
         self.alpha = np.zeros((n_classes, n_samples), dtype=np.float64)
         self.W = np.zeros((n_classes, n_features))
         # TODO non-linear kernel: replace ||x_i||^2 by k(x_i, x_i) (equation 6 in the paper)
-        norms = np.sqrt(np.sum(X ** 2, axis=1))
+        #print("true norm ", np.sqrt(np.sum(X ** 2, axis=1)))
+        if self.kernel == 'linear':
+            norms = np.sqrt(np.sum(X ** 2, axis=1))
+        elif self.kernel == 'gaussian':
+            norms = np.zeros(len(X))
+#            K = np.zeros((len(X),len(X)))
+#            for i in range(len(X)):
+#                for j in range(len(X)):
+#                    K[i,j] = self._gaussian_kernel(X[i],X[j])
+            K = rbf_kernel(X,X)
+            self.K = K
+            for i in range(len(X)):
+                norms[i] = np.sqrt(K[i,i]) 
+            self.X_train = X
+        else:
+            print('Only linear and gaussian kernels implemented. Using linear kernel.')
+            norms = np.sqrt(np.sum(X ** 2, axis=1))
         ind = np.arange(n_samples)
-        np.random.shuffle(ind)
+        np.random.shuffle(ind) 
         v_init = None
         for iter in range(self.max_iter):
+            if iter % 50 == 0:
+                print("**iter ",iter)
             vsum = 0
             for ix in range(n_samples):
                 i = ind[ix]
@@ -79,8 +111,10 @@ class CrammerSingerSVM():
                 if v < 1e-7:
                     continue
                 delta = self._solve_dual(g, y, norms, i)
-                self.W += (delta * X[i][:, np.newaxis]).T
+                if self.kernel == 'linear':
+                    self.W += (delta * X[i][:, np.newaxis]).T
                 self.alpha[:, i] += delta
+
             if iter == 0:
                 v_init = vsum
             vmax = vsum / v_init
@@ -93,13 +127,17 @@ class CrammerSingerSVM():
         self._dual_decomp(X, y)
 
     def predict(self, X):
-        predictions = np.argmax(np.dot(X, self.W.T), axis=1)
-        return predictions
+        if self.kernel == 'linear':
+            predictions = np.argmax(np.dot(X, self.W.T), axis=1)
+        elif self.kernel == 'gaussian':
+            K = rbf_kernel(X,self.X_train)
+            predictions = np.argmax(np.dot(K,self.alpha.T), axis=1) 
+            return predictions
 
 
 if __name__ == '__main__':
 
-    # TODO: Refactor data related stuff
+    #TODO: Refactor data related stuff
     X = np.genfromtxt('../data/Xtr.csv', delimiter=',')
     y = np.genfromtxt('../data/Ytr.csv', delimiter=',')
     X_sub = np.genfromtxt('../data/Xte.csv', delimiter=',')
@@ -109,10 +147,15 @@ if __name__ == '__main__':
     y = y[1:, 1]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-
-    clf = CrammerSingerSVM(C=0.1, epsilon=0.01, max_iter=100)
-    clf.fit(X_train, y_train)
-    y_pred = clf.predict(X_test)
-    print("test score", accuracy_score(y_test, y_pred))
+    list_C = [1.,10.,100.,1000.,10000.]
+    list_gamma = [0.001,0.01,0.1,1.,10.,100.]
+    for i in range(len(list_C)):
+        for j in range(len(list_gamma)):
+            print((i,j))
+            clf = CrammerSingerSVM(C=list_C[i], epsilon=0.01, max_iter=100,kernel='gaussian',gamma=list_gamma[j])
+            clf.fit(X_train, y_train)
+            y_pred = clf.predict(X_test)
+            print(y_pred)
+            print("test score", accuracy_score(y_test, y_pred), ' gamma ', list_gamma[j], ' C ', list_C[i])
     print("it sucks")
 
