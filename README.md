@@ -9,6 +9,7 @@ Project for the course Kernel Methods for Machine Learning
 
 - (opt.) More precise maxima detection using Taylor expansion
 - Comment what is done in histogram equalization 
+- Enlever l'import de rbf_kernel dans crammer singer et implémenter le notre
 
 - SIFT
     - 1) renvoyer séparément les maxima et les minima pour les 2 comparaisons de 3 DoGs (ie. on saura si les extrema ont été obtenus pour \sigma ou pour k*\sigma)
