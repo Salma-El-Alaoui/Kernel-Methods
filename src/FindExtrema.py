@@ -35,10 +35,15 @@ class FindExtrema():
         all_minima = []
         all_extrema = list()
         for i_oct,octave in enumerate(octaves):
-            maxima = []
-            minima = []
+            maxima_oct = []
+            minima_oct = []
+            extrema_oct = []
             for i_dog,dog in enumerate(octave[1:-1]):
                 i_dog += 1
+                print("i_dog ",i_dog)
+                maxi =[]
+                mini =[]
+                extr =[]
                 
                 for i in range(1,len(dog)-1):
                     for j in range(1,len(dog)-1):
@@ -47,16 +52,26 @@ class FindExtrema():
                         min_neighbors_values = min(neighbors_values)
                         # TODO: should we scale back or not?
                         if dog[i,j] >= max_neighbors_values:
-                            maximum = (i*2**i_oct,j*2**i_oct)
-                            maxima.append(maximum)
-                            all_extrema.append((i_oct, i_dog, maximum))
+                            #maximum = (i*2**i_oct,j*2**i_oct)
+                            maximum = (i,j)
+                            maxi.append(maximum)
+                            extr.append(maximum)
+                            #all_extrema.append((i_oct, i_dog, maximum))
                         if dog[i,j] <= min_neighbors_values:
-                            minimum = (i*2**i_oct,j*2**i_oct)
-                            minima.append(minimum)
-                            all_extrema.append((i_oct, i_dog, minimum))
-                            
-            all_maxima.extend(maxima)
-            all_minima.extend(minima)
+                            #minimum = (i*2**i_oct,j*2**i_oct)
+                            minimum = (i,j)
+                            mini.append(minimum)
+                            extr.append(maximum)
+                            #all_extrema.append((i_oct, i_dog, minimum))
+                maxima_oct.append(maxi)
+                minima_oct.append(mini)
+                extrema_oct.append(extr)
+            print("maxima_oct  ",len(maxima_oct))
+            all_maxima.append(maxima_oct)
+            all_minima.append(minima_oct)
+            all_extrema.append(extrema_oct)
+            print("all maxima   ",len(all_maxima))
+        #print(len(all_minima))
             
         return all_maxima,all_minima, all_extrema
         
@@ -162,6 +177,9 @@ if __name__ == '__main__':
 #            plt.title('Octave n° '+str(i)+ ' Scale n° '+str(j))  
     find_extrema = FindExtrema()
     maxima, minima, extrema = find_extrema.find_extrema(output)
+    print("--maxima--")
+    print (len(maxima[0][0]))
+    print (len(minima[0][0]))
     
     bad_points = []
     for octave in output:
@@ -180,9 +198,9 @@ if __name__ == '__main__':
             idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
             idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
             idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
-            plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=0.1)
-            plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=0.1)
-            plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=0.1)
+            plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=1)
+            plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=1)
+            plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=1)
             list_oct.append(list_scale)
         bad_points.append(list_oct)
     print (len(bad_points))
@@ -191,8 +209,28 @@ if __name__ == '__main__':
         for j in range(len(bad_points[0])):
             print(i,j)
             print(len(bad_points[i][j]))
-          
-#TODO enlever les bad points
+            
+ #TODO enlever les bad points:
+           
+    for i in range(len(bad_points)):
+        for j in range(len(bad_points[0])):
+            img = output[i][j+1]
+            print("iteration ", i," ",j)
+            print(len(bad_points[i][j]))
+            print(len(extrema[i][j]))
+            plt.figure()
+            plt.imshow(img, cmap="gray")
+            idx_bad_points_x, idx_bad_points_y = [ind[0] for ind in bad_points[i][j]], [ind[1] for ind in bad_points[i][j]]
+            idx_extrema_x, idx_extrema_y = [ind[0] for ind in extrema[i][j]], [ind[1] for ind in extrema[i][j]]
+            plt.scatter(idx_extrema_y, idx_extrema_x, marker='o', c='b', s=0.5)
+            plt.scatter(idx_bad_points_y, idx_bad_points_x, marker='o', c='y', s=0.5)
+            for couple in bad_points[i][j]:
+                try:  
+                    extrema[i][j].remove(couple)  
+                except:  
+                    pass 
+            print(len(extrema[i][j]))
+
        
 #%%
 plt.figure()
