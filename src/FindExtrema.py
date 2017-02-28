@@ -60,8 +60,8 @@ class FindExtrema():
                             #minimum = (i*2**i_oct,j*2**i_oct)
                             minimum = (i,j)
                             mini.append(minimum)
-                            extr.append(maximum)
-                            #all_extrema.append((i_oct, i_dog, minimum))
+                            extr.append(minimum)
+                            #all_extrema.append((i_oct, i_dog, minimum))                
                 maxima_oct.append(maxi)
                 minima_oct.append(mini)
                 extrema_oct.append(extr)
@@ -166,17 +166,11 @@ if __name__ == '__main__':
     im_res = imresize(equalized_item,(256,256),interp="bilinear")
     
     pyramid = Pyramid(img=im_res, sigma=0.8, n_oct=4)
-    output = pyramid.create_diff_gauss()
-#    for i in range(len(output)):
-#        for j in range(len(output[0])):
-#            plt.figure()
-#            plt.imshow(output[i][j],cmap='gray')
-#            plt.title('Octave n° '+str(i)+ ' Scale n° '+str(j))  
+    output = pyramid.create_diff_gauss() 
     find_extrema = FindExtrema()
     maxima, minima, extrema = find_extrema.find_extrema(output)
     
     bad_points = []
-    count_LC = 0
     for octave in output:
         list_oct = []
         for img in octave[1:3] :
@@ -186,9 +180,10 @@ if __name__ == '__main__':
             list_scale.extend(idx_corners)
             edges = EdgeDetection().find_edges(img)
             list_scale.extend(edges)
-            contrast = LowContrast(threshold = 1).get_low_contrast(img)
-            count_LC += len(contrast)
+            contrast = LowContrast(threshold = 0.6).get_low_contrast(img)
             list_scale.extend(contrast)
+            
+            
             plt.figure()
             plt.imshow(img, cmap="gray")
             idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
@@ -197,37 +192,31 @@ if __name__ == '__main__':
             plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=1)
             plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=1)
             plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=1)
+            
             list_oct.append(list_scale)
         bad_points.append(list_oct)
-    print("LowCount ",count_LC)
-    print (len(bad_points))
-    print (len(bad_points[0]))
-    for i in range(len(bad_points)):
-        for j in range(len(bad_points[0])):
-            print(i,j)
-            print(len(bad_points[i][j]))
+        
             
  #TODO enlever les bad points:
            
     for i in range(len(bad_points)):
         for j in range(len(bad_points[0])):
             img = output[i][j+1]
-            print("iteration ", i," ",j)
-            print(len(bad_points[i][j]))
-            print(len(extrema[i][j]))
             plt.figure()
-            plt.imshow(img, cmap="gray")
+            #plt.imshow(img, cmap="gray")
+            plt.axis('equal')
             idx_bad_points_x, idx_bad_points_y = [ind[0] for ind in bad_points[i][j]], [ind[1] for ind in bad_points[i][j]]
             idx_extrema_x, idx_extrema_y = [ind[0] for ind in extrema[i][j]], [ind[1] for ind in extrema[i][j]]
-            plt.scatter(idx_extrema_y, idx_extrema_x, marker='o', c='b', s=0.5)
-            plt.scatter(idx_bad_points_y, idx_bad_points_x, marker='o', c='y', s=0.5)
+            plt.scatter(-idx_extrema_y, idx_extrema_x, marker='o', c='b', s=2)
+            plt.scatter(-idx_bad_points_y, idx_bad_points_x, marker='o', c='y', s=2)
+            
+            extrema[i][j]=list(set(extrema[i][j]))
+            
             for couple in bad_points[i][j]:
-                try:  
+                try:
                     extrema[i][j].remove(couple)  
                 except:  
                     pass 
-            print(len(extrema[i][j]))
-
        
 #%%
 plt.figure()
