@@ -94,8 +94,8 @@ if __name__ == '__main__':
     X_train, X_test, y_train = load_data()
     id_img =  108
     image = X_train[id_img]
-    sift = Sift()
-    pyramid, extrema_flat = sift.perform_sift(image, verbose=True, thresh_contrast=0.3)
+    sift = Sift(thresh_contrast=1)
+    pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
     #%%
     ref = ReferenceOrientation(pyramid)
     gradient = ref.gradient()
