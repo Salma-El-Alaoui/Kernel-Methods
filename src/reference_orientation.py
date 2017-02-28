@@ -13,13 +13,14 @@ import time
 
 class ReferenceOrientation:
 
-    def __init__(self, pyramid, lambda_ori=1.5):
+    def __init__(self, pyramid, lambda_ori=1.5,t=0.8):
         self.lambda_ori = lambda_ori
         self.scales = pyramid.get_scales()
         self.dogs = pyramid.create_diff_gauss()
         self.sigma_min = pyramid.get_sigma()
         self.n_scales = pyramid.get_nscales()
-
+        self.t = t
+        
     def _is_inborder(self, keypoint):
         octave = keypoint[0] + 1
         dog = keypoint[1]
@@ -50,16 +51,30 @@ class ReferenceOrientation:
         sigma = self.sigma_min * 2 ** (scale / self.n_scales - 3)
         grad_m, grad_n = gradient[octave-1][scale]
         infx = 3 * self.lambda_ori * sigma
-        for m in range(int((x-infx)/delta), int((x+infx)/delta)):
-            for n in range(int((y-infx)/delta), int((y+infx)/delta)):
+        for m in range(int((x-infx)/delta), int((x+infx)/delta)+1):
+            for n in range(int((y-infx)/delta), int((y+infx)/delta)+1):
                 c = np.exp(-((np.abs(m*delta-x))**2-np.abs(n*delta-y))**2)/(2* self.lambda_ori**2 * sigma**2)\
                 * np.sqrt((np.abs(grad_m[m,n]))**2 + (np.abs(grad_n[m,n]))**2)
                 b = n_bins/(2*np.pi) * ((np.arctan2(grad_m[m,n], grad_n[m,n]))%(2* np.pi))
                 hist[int(b)]+=c
+                
         for i in range(6):
-            hist = np.convolve(hist,np.array([1,1,1])/3)
+            hist = np.convolve(hist,np.array([1,1,1])/3,mode='same')
         #print("keypoint ",time.time()-time1)
-        return hist
+        
+        # Extract the reference orientation
+        max_h = hist.max()
+        keypoints = []
+        for k in range(n_bins):
+            theta_k = 2*np.pi*(k-1)/n_bins
+            hk_m = hist[(k-1) % n_bins] # hk-
+            hk = hist[k]
+            hk_p = hist[(k+1) % n_bins] # hk+
+            if (hk > hk_m) and (hk > hk_p) and (hk >= self.t*max_h):
+                theta = theta_k + np.pi/n_bins * (hk_m - hk_p)/(hk_m - 2*hk + hk_p)
+                keypoints.append(keypoint + (theta,))
+                    
+        return keypoints #output of algo 11
     
     
     def gradient(self):

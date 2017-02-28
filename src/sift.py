@@ -91,21 +91,30 @@ class Sift():
 #%%               
 if __name__ == '__main__':
 
-    X_train, X_test, y_train = load_data()
-    id_img =  108
-    image = X_train[id_img]
+    #X_train, X_test, y_train = load_data()
+    #id_img =  108
+    #image = X_train[id_img]
     sift = Sift(thresh_contrast=1)
     pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
     #%%
     ref = ReferenceOrientation(pyramid)
     gradient = ref.gradient()
     count = 0
+    count_points = 0
+    #sum_hist = np.zeros(36)
+    keypoints = []
     for i, ext in enumerate(extrema_flat):
         if ref._is_inborder(ext):
-            hist = ref.get_histogram(ext, gradient)
-            if len(hist[hist!=0]) == 0:
-                count += 1
-        
+            count_points += 1
+            
+            keypoint = ref.get_histogram(ext, gradient)
+            keypoints.append(keypoint)
+            
+            #hist = ref.get_histogram(ext, gradient)
+            #if len(hist[hist!=0]) == 0:
+            #    count += 1
+
+    print("keypoints ",keypoints)    
     # Load toy image
     #test_zz = imread('test.jpg')
     #test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
