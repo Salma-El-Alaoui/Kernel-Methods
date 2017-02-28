@@ -27,7 +27,6 @@ class ReferenceOrientation:
         x = keypoint[2][0]
         y = keypoint[2][1]
         sigma = self.sigma_min * 2 ** (scale / self.n_scales - 3)
-        print("border",octave-1, scale )
         h, w = self.scales[octave-1][scale].shape[0], self.scales[octave-1][scale].shape[1]
 
         inf_x = 3 * self.lambda_ori * sigma
@@ -49,7 +48,6 @@ class ReferenceOrientation:
         y = keypoint[2][1]
         delta = octave + 1
         sigma = self.sigma_min * 2 ** (scale / self.n_scales - 3)
-        print("gradient",octave-1, scale )
         grad_m, grad_n = gradient[octave-1][scale]
         infx = 3 * self.lambda_ori * sigma
         for m in range(int((x-infx)/delta), int((x+infx)/delta)):
@@ -67,8 +65,8 @@ class ReferenceOrientation:
     def gradient(self):
         l = []
         for octave in self.scales:
+            list_scales=[]
             for scale in octave[1:3]:
-                list_scales=[]
                 grad_m = np.zeros((scale.shape[0]-2,scale.shape[0]-2))
                 grad_n = np.zeros(grad_m.shape)
                 for m in range(scale.shape[0]-2):

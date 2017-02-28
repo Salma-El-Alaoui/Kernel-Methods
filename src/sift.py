@@ -20,10 +20,12 @@ import matplotlib.pyplot as plt
 #%%
 class Sift():
      
-    def __init__(self, interp_size=256):
+    def __init__(self, interp_size=256, thresh_contrast=1.5, thresh_corner=0.1):
         self.interp_size = interp_size
         self.sigma_min = 0.8
         self.n_octaves = 4
+        self.thresh_contrast = thresh_contrast
+        self.thresh_corner = thresh_corner
   
  
     def perform_sift(self, image, verbose=False):
@@ -41,12 +43,12 @@ class Sift():
             list_oct = []
             for sc, img in enumerate(octave[1:3]) :
                 list_scale = []
-                harris = HarrisCorner(threshold=0.1)
+                harris = HarrisCorner(threshold=self.thresh_corner)
                 idx_corners = harris.get_corners(img)
                 list_scale.extend(idx_corners)
                 edges = EdgeDetection().find_edges(img)
                 list_scale.extend(edges)
-                contrast = LowContrast(threshold = 0.6).get_low_contrast(img)
+                contrast = LowContrast(threshold=self.thresh_contrast).get_low_contrast(img)
                 list_scale.extend(contrast)
                 
                 # plot bad points
@@ -86,26 +88,24 @@ class Sift():
         return pyramid, extrema_flat
        
             
-                
+#%%               
 if __name__ == '__main__':
+
     X_train, X_test, y_train = load_data()
     id_img =  108
     image = X_train[id_img]
     sift = Sift()
-    pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
+    pyramid, extrema_flat = sift.perform_sift(image, verbose=True, thresh_contrast=0.3)
     #%%
     ref = ReferenceOrientation(pyramid)
     gradient = ref.gradient()
+    count = 0
     for i, ext in enumerate(extrema_flat):
         if ref._is_inborder(ext):
-            print(ext)
             hist = ref.get_histogram(ext, gradient)
             if len(hist[hist!=0]) == 0:
-                print(" empty histogram")
-
-                
-                
-                
+                count += 1
+        
     # Load toy image
     #test_zz = imread('test.jpg')
     #test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
