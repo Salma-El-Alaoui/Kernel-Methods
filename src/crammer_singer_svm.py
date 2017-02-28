@@ -10,8 +10,7 @@ Multiclass SVMs (Crammer-Singer).
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-import time
-from sklearn.metrics.pairwise import rbf_kernel,linear_kernel
+from sklearn.metrics.pairwise import rbf_kernel
 
 def simplex_proj(v, z=1):
     n_features = v.shape[0]
