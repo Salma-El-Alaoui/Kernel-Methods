@@ -115,12 +115,12 @@ if __name__ == '__main__':
             count_points += 1
             
             keypoint = ref.get_histogram(ext, gradient)
-            keypoints.append(keypoint)
-            
+            print(i)
+            print(keypoint)
             #hist = ref.get_histogram(ext, gradient)
             #if len(hist[hist!=0]) == 0:
             #    count += 1
-            comp = ComputeDescriptors().build_keypoint_descriptor(keypoint,gradient)
+            comp = ComputeDescriptors(pyramid).build_keypoint_descriptor(keypoint[0],gradient)
             
 
     #print("keypoints ",keypoints)    
