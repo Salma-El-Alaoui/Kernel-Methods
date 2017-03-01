@@ -52,7 +52,7 @@ class ReferenceOrientation:
         grad_m, grad_n = gradient[octave-1][scale]
         infx = 3 * self.lambda_ori * sigma
         for m in range(int((x-infx)/delta), int((x+infx)/delta)+1):
-            for n in range(int((y-infx)/delta), int((y+infx)/delta)+1):
+            for n in range(round((y-infx)/delta), round((y+infx)/delta)+1):
                 c = np.exp(-((np.abs(m*delta-x))**2-np.abs(n*delta-y))**2)/(2* self.lambda_ori**2 * sigma**2)\
                 * np.sqrt((np.abs(grad_m[m,n]))**2 + (np.abs(grad_n[m,n]))**2)
                 b = n_bins/(2*np.pi) * ((np.arctan2(grad_m[m,n], grad_n[m,n]))%(2* np.pi))

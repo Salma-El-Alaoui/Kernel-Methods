@@ -112,6 +112,7 @@ if __name__ == '__main__':
     keypoints = []
     for i, ext in enumerate(extrema_flat):
         print(i)
+        print ("keypoint")
         if ref._is_inborder(ext):
             count_points += 1
             
@@ -121,8 +122,11 @@ if __name__ == '__main__':
             #if len(hist[hist!=0]) == 0:
             #    count += 1
             if keypoint != []:
-                comp = ComputeDescriptors(pyramid).build_keypoint_descriptor(keypoint[0],gradient)
-                print ("comp ",comp)
+                comp0 = ComputeDescriptors(pyramid)
+                if comp0.is_in_border(keypoint[0]):
+                    comp = comp0.build_keypoint_descriptor(keypoint[0],gradient)
+                    print ("comp ",comp)
+                    print (comp[comp!=0])
 
     #print("keypoints ",keypoints)    
     # Load toy image
