@@ -17,6 +17,7 @@ from reference_orientation import ReferenceOrientation
 from image_utils import load_data
 import numpy as np
 import matplotlib.pyplot as plt
+from ComputeDescriptors import ComputeDescriptors
 #%%
 class Sift():
      
@@ -119,8 +120,10 @@ if __name__ == '__main__':
             #hist = ref.get_histogram(ext, gradient)
             #if len(hist[hist!=0]) == 0:
             #    count += 1
+            comp = ComputeDescriptors().build_keypoint_descriptor(keypoint,gradient)
+            
 
-    print("keypoints ",keypoints)    
+    #print("keypoints ",keypoints)    
     # Load toy image
     #test_zz = imread('test.jpg')
     #test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
