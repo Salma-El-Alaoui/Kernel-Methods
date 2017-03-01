@@ -48,6 +48,15 @@ class CrammerSingerSVM():
 
     def _gaussian_kernel(self,x,y):
         return np.exp(-self.gamma*np.linalg.norm(x-y)**2)
+    
+#    def _rbf_kernel(X,Y,gamma=1.):
+#        def distance_2(X,Y):
+#            pass
+#        distances = distance_2(X, Y)
+#        distances *= -gamma
+#        K = np.exp(distances)   
+#        return K
+#
 
         
     def _getvi(self, g, y, i):

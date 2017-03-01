@@ -9,7 +9,7 @@ Project for the course Kernel Methods for Machine Learning
 
 - (opt.) More precise maxima detection using Taylor expansion
 - Comment what is done in histogram equalization 
-- Enlever l'import de rbf_kernel dans crammer singer et implémenter le notre
+- !!! Enlever l'import de rbf_kernel dans crammer singer et implémenter le notre
 
 
 
