@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 #%%
 class Sift():
      
-    def __init__(self, interp_size=256, thresh_contrast=1.5, thresh_corner=0.1):
+    def __init__(self, interp_size=256, thresh_contrast=2., thresh_corner=0.1):
         self.interp_size = interp_size
-        self.sigma_min = 0.8
+        self.sigma_min = 1.5
         self.n_octaves = 4
         self.thresh_contrast = thresh_contrast
         self.thresh_corner = thresh_corner
@@ -30,7 +30,7 @@ class Sift():
  
     def perform_sift(self, image, verbose=False):
         equalized_item = equalize_item(image, verbose=False)
-        im_res = imresize(equalized_item, (self.interp_size, self.interp_size), interp="bilinear")  
+        im_res = imresize(equalized_item, (self.interp_size, self.interp_size), interp="bilinear") 
         pyramid = Pyramid(img=im_res, sigma=self.sigma_min, n_oct=self.n_octaves)
         dogs = pyramid.create_diff_gauss() 
         find_extrema = FindExtrema()
@@ -60,10 +60,10 @@ class Sift():
                     idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
                     idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
                     # corners in blue, edges in red, low contrast points i  green
-                    s = 0.1 * 2**o
-                    plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=s)
+                    s = 0.08 * 2**o
                     plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=s)
-                    plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)   
+                    plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)
+                    plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=s)
                     plt.title(" Bad points for Octave " + str(o) +" Scale " + str(sc+1))
                 list_oct.append(list_scale)
             bad_points.append(list_oct)       
@@ -92,9 +92,15 @@ class Sift():
 if __name__ == '__main__':
 
     #X_train, X_test, y_train = load_data()
-    #id_img =  108
-    #image = X_train[id_img]
-    sift = Sift(thresh_contrast=1)
+    id_img =  108
+    image = X_train[id_img]
+#    test_zz = imread('carre.jpg')
+#    print (test_zz[:,:,0].shape)
+#    image = np.zeros(32*32*3)
+#    image[:1024] = imresize(test_zz[:,:,0],(32,32)).reshape(32*32)
+#    image[1024:2048] = imresize(test_zz[:,:,1],(32,32)).reshape(32*32)
+#    image[2048:] = imresize(test_zz[:,:,2],(32,32)).reshape(32*32)
+    sift = Sift(thresh_contrast=100, thresh_corner =0.9)
     pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
     #%%
     ref = ReferenceOrientation(pyramid)

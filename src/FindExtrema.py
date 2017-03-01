@@ -33,12 +33,12 @@ class FindExtrema():
                         max_neighbors_values = max(neighbors_values)
                         min_neighbors_values = min(neighbors_values)
                         # TODO: should we scale back or not?
-                        if dog[i,j] >= max_neighbors_values:
+                        if dog[i,j] > max_neighbors_values:
                             #maximum = (i*2**i_oct,j*2**i_oct)
                             maximum = (i,j)
                             extr.append(maximum)
                             all_extrema_flat.append((i_oct, i_dog, maximum))
-                        if dog[i,j] <= min_neighbors_values:
+                        if dog[i,j] < min_neighbors_values:
                             #minimum = (i*2**i_oct,j*2**i_oct)
                             minimum = (i,j)
                             extr.append(minimum)

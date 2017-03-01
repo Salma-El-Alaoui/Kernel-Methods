@@ -9,7 +9,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 
 class HarrisCorner():
-    def __init__(self,sigma=1.,threshold=0.9):
+    def __init__(self,sigma=1.,threshold=0.1):
         self.epsilon = 1e-5
         self.sigma = sigma
         self.threshold = threshold
