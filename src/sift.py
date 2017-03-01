@@ -111,17 +111,18 @@ if __name__ == '__main__':
     #sum_hist = np.zeros(36)
     keypoints = []
     for i, ext in enumerate(extrema_flat):
+        print(i)
         if ref._is_inborder(ext):
             count_points += 1
             
             keypoint = ref.get_histogram(ext, gradient)
-            print(i)
             print(keypoint)
             #hist = ref.get_histogram(ext, gradient)
             #if len(hist[hist!=0]) == 0:
             #    count += 1
-            comp = ComputeDescriptors(pyramid).build_keypoint_descriptor(keypoint[0],gradient)
-            
+            if keypoint != []:
+                comp = ComputeDescriptors(pyramid).build_keypoint_descriptor(keypoint[0],gradient)
+                print ("comp ",comp)
 
     #print("keypoints ",keypoints)    
     # Load toy image
