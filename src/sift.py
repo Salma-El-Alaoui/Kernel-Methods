@@ -21,10 +21,10 @@ from ComputeDescriptors import ComputeDescriptors
 #%%
 class Sift():
      
-    def __init__(self, interp_size=256, thresh_contrast=2., thresh_corner=0.1):
+    def __init__(self, interp_size=128, thresh_contrast=2., thresh_corner=0.1):
         self.interp_size = interp_size
         self.sigma_min = 1.5
-        self.n_octaves = 4
+        self.n_octaves = 3
         self.thresh_contrast = thresh_contrast
         self.thresh_corner = thresh_corner
   
@@ -61,7 +61,7 @@ class Sift():
                     idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
                     idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
                     # corners in blue, edges in red, low contrast points i  green
-                    s = 0.08 * 2**o
+                    s = 2 * 2**o #0.8* 2**o
                     plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=s)
                     plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)
                     plt.scatter(idx_corners_y, idx_corners_x, marker='o', c='b', s=s)
@@ -79,7 +79,7 @@ class Sift():
                 extrema[i][j] = list(a - b)
                 if verbose:
                     plt.figure()
-                    s = 0.1 * 2**i
+                    s = 2 * 2**i #0.1 * 2**i
                     plt.axis('equal')
                     idx_extrema_x, idx_extrema_y = [ind[0] for ind in extrema[i][j]], [ind[1] for ind in extrema[i][j]]
                     plt.scatter(-1 * np.array(idx_extrema_y), idx_extrema_x, marker='o', c='b', s=s)
@@ -101,7 +101,7 @@ if __name__ == '__main__':
 #    image[:1024] = imresize(test_zz[:,:,0],(32,32)).reshape(32*32)
 #    image[1024:2048] = imresize(test_zz[:,:,1],(32,32)).reshape(32*32)
 #    image[2048:] = imresize(test_zz[:,:,2],(32,32)).reshape(32*32)
-    sift = Sift(thresh_contrast=100, thresh_corner =0.9)
+    sift = Sift(thresh_contrast=0.3, thresh_corner =0.9)
     pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
     #%%
     ref = ReferenceOrientation(pyramid)
@@ -111,13 +111,13 @@ if __name__ == '__main__':
     #sum_hist = np.zeros(36)
     keypoints = []
     for i, ext in enumerate(extrema_flat):
-        print(i)
+        #print(i)
         print ("keypoint")
         if ref._is_inborder(ext):
             count_points += 1
             
             keypoint = ref.get_histogram(ext, gradient)
-            print(keypoint)
+            
             #hist = ref.get_histogram(ext, gradient)
             #if len(hist[hist!=0]) == 0:
             #    count += 1
@@ -125,7 +125,7 @@ if __name__ == '__main__':
                 comp0 = ComputeDescriptors(pyramid)
                 if comp0.is_in_border(keypoint[0]):
                     comp = comp0.build_keypoint_descriptor(keypoint[0],gradient)
-                    print ("comp ",comp)
+                    #print ("comp ",comp)
                     print (comp[comp!=0])
 
     #print("keypoints ",keypoints)    
