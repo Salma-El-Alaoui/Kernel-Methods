@@ -50,7 +50,7 @@ class ComputeDescriptors():
         infx = np.sqrt(2) * self.lambda_descr * sigma*(self.n_hist+1)/self.n_hist
         upper_bound = 2*self.lambda_descr/self.n_hist
         
-        hist = np.ndarray((self.n_hist,self.n_hist,self.n_ori))
+        hist = np.zeros((self.n_hist,self.n_hist,self.n_ori))
         
         #print("delta ", delta)
         #print("infx", infx)
