@@ -18,6 +18,7 @@ from image_utils import load_data
 import numpy as np
 import matplotlib.pyplot as plt
 from ComputeDescriptors import ComputeDescriptors
+import time
 #%%
 class Sift():
      
@@ -32,6 +33,8 @@ class Sift():
     def perform_sift(self, image, verbose=False):
         equalized_item = equalize_item(image, verbose=False)
         im_res = imresize(equalized_item, (self.interp_size, self.interp_size), interp="bilinear") 
+        plt.figure()
+        plt.imshow(im_res, cmap="gray")
         pyramid = Pyramid(img=im_res, sigma=self.sigma_min, n_oct=self.n_octaves)
         dogs = pyramid.create_diff_gauss() 
         find_extrema = FindExtrema()
@@ -60,7 +63,7 @@ class Sift():
                     idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
                     idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
                     idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
-                    # corners in blue, edges in red, low contrast points i  green
+                     #corners in blue, edges in red, low contrast points i  green
                     s = 2 * 2**o #0.8* 2**o
                     plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=s)
                     plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)
@@ -93,7 +96,7 @@ class Sift():
 if __name__ == '__main__':
 
     #X_train, X_test, y_train = load_data()
-    id_img =  108
+    id_img =  80
     image = X_train[id_img]
 #    test_zz = imread('carre.jpg')
 #    print (test_zz[:,:,0].shape)
@@ -101,6 +104,7 @@ if __name__ == '__main__':
 #    image[:1024] = imresize(test_zz[:,:,0],(32,32)).reshape(32*32)
 #    image[1024:2048] = imresize(test_zz[:,:,1],(32,32)).reshape(32*32)
 #    image[2048:] = imresize(test_zz[:,:,2],(32,32)).reshape(32*32)
+    time_init = time.time()
     sift = Sift(thresh_contrast=0.3, thresh_corner =0.9)
     pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
     #%%
@@ -110,9 +114,10 @@ if __name__ == '__main__':
     count_points = 0
     #sum_hist = np.zeros(36)
     keypoints = []
+    output_sift=[]
     for i, ext in enumerate(extrema_flat):
         #print(i)
-        print ("keypoint")
+        #print ("keypoint")
         if ref._is_inborder(ext):
             count_points += 1
             
@@ -125,9 +130,14 @@ if __name__ == '__main__':
                 comp0 = ComputeDescriptors(pyramid)
                 if comp0.is_in_border(keypoint[0]):
                     comp = comp0.build_keypoint_descriptor(keypoint[0],gradient)
+                    #print(len(comp))
                     #print ("comp ",comp)
-                    print (comp[comp!=0])
-
+                    if len(comp[comp!=0])!=0:
+                        print (len(comp[comp!=0]))
+                        print('0? ', )
+                        output_sift.append(comp)
+                        
+    print(time.time()-time_init)
     #print("keypoints ",keypoints)    
     # Load toy image
     #test_zz = imread('test.jpg')

@@ -553,7 +553,7 @@ def build_histogram(magnitude, orientation, cell_size=(8, 8), signed_orientation
         return normalised_blocks
 
 
-def histogram_from_gradients(gradientx, gradienty, cell_size=(8, 8), cells_per_block=(1, 1), signed_orientation=False,
+def histogram_from_gradients(gradientx, gradienty, cell_size, cells_per_block, signed_orientation=False,
         nbins=9, visualise=False, normalise=True, flatten=False, same_size=False):
     """ builds a histogram of oriented gradient from the provided gradients
     Parameters
@@ -601,7 +601,7 @@ def histogram_from_gradients(gradientx, gradienty, cell_size=(8, 8), cells_per_b
          nbins=nbins, visualise=visualise, normalise=normalise, flatten=flatten)
 
 
-def hog(image, cell_size=(4, 4), cells_per_block=(1, 1), signed_orientation=False,
+def hog(image, cell_size=(2, 2), cells_per_block=(1, 1), signed_orientation=False,
         nbins=9, visualise=False, normalise=True, flatten=False, same_size=True):
     """ builds a histogram of oriented gradient (HoG) from the provided image
     Compute a Histogram of Oriented Gradients (HOG) by
@@ -654,18 +654,19 @@ def hog(image, cell_size=(4, 4), cells_per_block=(1, 1), signed_orientation=Fals
     
  #%%   
 
-X_train, X_test, y_train = load_data()
+#X_train, X_test, y_train = load_data()
 id_img =  108
 #%%
 from equalization import equalize_item
 image = X_train[id_img]
 img = equalize_item(image)
+np.array(hog(img)).shape
 #%%
 hist_train = []
 for id_img in range(len(X_train)):
     print(id_img)
     image = X_train[id_img]
-    img = equalize_item(image)
+    img = equalize_item(image, verbose = False)
     hist_train.append(hog(img,visualise=False))
 
 #%%
