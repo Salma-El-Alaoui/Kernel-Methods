@@ -14,6 +14,7 @@ from sklearn.metrics.pairwise import rbf_kernel
 from equalization import equalize_item
 from image_utils import load_data
 from HoG import hog
+import pandas as pd
 
 def simplex_proj(v, z=1):
     n_features = v.shape[0]
@@ -51,14 +52,6 @@ class CrammerSingerSVM():
 
     def _gaussian_kernel(self,x,y):
         return np.exp(-self.gamma*np.linalg.norm(x-y)**2)
-    
-#    def _rbf_kernel(X,Y,gamma=1.):
-#        def distance_2(X,Y):
-#            pass
-#        distances = distance_2(X, Y)
-#        distances *= -gamma
-#        K = np.exp(distances)   
-#        return K
         
     def _getvi(self, g, y, i):
         min_side = np.inf
@@ -136,7 +129,8 @@ class CrammerSingerSVM():
 
     def predict(self, X):
         if self.kernel == 'linear':
-            predictions = np.argmax(np.dot(X, self.W[:-1].T) + self.W[-1], axis=1)
+            predictions = np.argmax(np.dot(X, self.W[:, :-1].T) + self.W[:, -1], axis=1)
+            
         elif self.kernel == 'gaussian':
             K = rbf_kernel(X, self.X_train)
             predictions = np.argmax(np.dot(K,self.alpha.T), axis=1) 
@@ -152,8 +146,8 @@ def cross_validation(X, y, nb_folds):
         y_test = y[k * subset_size:][:subset_size]
         yield X_train, y_train, X_test, y_test
 
-if __name__ == '__main__':
-
+#if __name__ == '__main__':
+#%%
     X_train, X_test, y_train = load_data()
     
     hist_train = []
@@ -181,16 +175,16 @@ if __name__ == '__main__':
     for i in range(hist_test_np.shape[0]):
         X_test[i] = hist_test_np[i].reshape(hist_test_np.shape[1] * hist_test_np.shape[2] * hist_test_np.shape[3])
 
-    X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
     #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    list_C = [0.01, 0.15, 0.016, 0.017, 0.018]
+    list_C = [0.01, 0.015, 0.016, 0.017, 0.018, 0.02, 0.05, 0.08, 0.1]
     #list_gamma = [0.001,0.01,0.1,1.,10.,100.]
 #%%
     parameters = dict()
     for C in list_C:
         accuracies_folds = list()
         for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, 5):
-            clf = CrammerSingerSVM(C=C, epsilon=0.001, max_iter=300, kernel='linear')
+            X_train_train = np.concatenate((X_train_train, np.ones((len(X_train_train), 1))), axis=1)
+            clf = CrammerSingerSVM(C=C, epsilon=0.0001, max_iter=500, kernel='')
             clf.fit(X_train_train, y_train_train)
             y_pred = clf.predict(X_valid)
             acc = accuracy_score(y_valid, y_pred)
@@ -200,3 +194,11 @@ if __name__ == '__main__':
         parameters[C] = np.mean(accuracies_folds)
 
     print(parameters)
+#%%
+X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
+clf = CrammerSingerSVM(C=0.016, epsilon=0.0001, max_iter=2000, kernel='gaussian'')
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+df = pd.DataFrame(y_pred)
+df.index += 1 
+
