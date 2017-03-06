@@ -11,6 +11,9 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import rbf_kernel
+from equalization import equalize_item
+from image_utils import load_data
+from HoG import hog
 
 def simplex_proj(v, z=1):
     n_features = v.shape[0]
@@ -25,7 +28,7 @@ def simplex_proj(v, z=1):
     
 
 class CrammerSingerSVM():
-    def __init__(self, C=1.0, kernel='linear',max_iter=100, epsilon=0.01,gamma=1.0):
+    def __init__(self, C=1.0, kernel='linear', max_iter=100, epsilon=0.01, gamma=1.0):
         self.C = C
         self.max_iter = max_iter
         self.epsilon = epsilon
@@ -38,7 +41,7 @@ class CrammerSingerSVM():
         # W, but not sure (equation 4 in the paper)
         if self.kernel == 'linear':
             g = np.dot(X[i], self.W.T) + 1
-        elif self.kernel== 'gaussian':
+        elif self.kernel == 'gaussian':
             g = np.dot(self.alpha,self.K[:,i]) + 1
         else:
             print('Only linear and gaussian kernels implemented. Using linear kernel.')
@@ -56,8 +59,6 @@ class CrammerSingerSVM():
 #        distances *= -gamma
 #        K = np.exp(distances)   
 #        return K
-#
-
         
     def _getvi(self, g, y, i):
         min_side = np.inf
@@ -122,7 +123,6 @@ class CrammerSingerSVM():
                 if self.kernel == 'linear':
                     self.W += (delta * X[i][:, np.newaxis]).T
                 self.alpha[:, i] += delta
-
             if iter == 0:
                 v_init = vsum
             vmax = vsum / v_init
@@ -136,34 +136,67 @@ class CrammerSingerSVM():
 
     def predict(self, X):
         if self.kernel == 'linear':
-            predictions = np.argmax(np.dot(X, self.W.T), axis=1)
+            predictions = np.argmax(np.dot(X, self.W[:-1].T) + self.W[-1], axis=1)
         elif self.kernel == 'gaussian':
-            K = rbf_kernel(X,self.X_train)
+            K = rbf_kernel(X, self.X_train)
             predictions = np.argmax(np.dot(K,self.alpha.T), axis=1) 
-            return predictions
+        return predictions
 
+
+def cross_validation(X, y, nb_folds):
+    subset_size = int(len(X) / nb_folds)
+    for k in range(nb_folds):
+        X_train = np.concatenate((X[:k * subset_size], X[(k + 1) * subset_size:]), axis=0)
+        X_test = X[k * subset_size:][:subset_size]
+        y_train =  np.concatenate((y[:k * subset_size], y[(k + 1) * subset_size:]), axis=0) 
+        y_test = y[k * subset_size:][:subset_size]
+        yield X_train, y_train, X_test, y_test
 
 if __name__ == '__main__':
 
-    #TODO: Refactor data related stuff
-    X = np.genfromtxt('../data/Xtr.csv', delimiter=',')
-    y = np.genfromtxt('../data/Ytr.csv', delimiter=',')
-    X_sub = np.genfromtxt('../data/Xte.csv', delimiter=',')
+    X_train, X_test, y_train = load_data()
+    
+    hist_train = []
+    for id_img in range(len(X_train)):
+        image = X_train[id_img]
+        img = equalize_item(image, verbose=False)
+        hist_train.append(hog(img, visualise=False))
+    
+    
+    hist_test = []
+    for id_img in range(len(X_test)):
+        image = X_test[id_img]
+        img = equalize_item(image, verbose=False)
+        hist_test.append(hog(img, visualise=False))
+    
+    hist_train_np = np.array(hist_train)
+    hist_test_np = np.array(hist_test)
+    
+    X_train = np.zeros((hist_train_np.shape[0], hist_train_np.shape[1] * hist_train_np.shape[2] * hist_train_np.shape[3]))
+    X_test = np.zeros((hist_test_np.shape[0], hist_test_np.shape[1] * hist_test_np.shape[2] * hist_test_np.shape[3]))
+   
+    for i in range(hist_train_np.shape[0]):
+        X_train[i] = hist_train_np[i].reshape(hist_train_np.shape[1] * hist_train_np.shape[2] * hist_train_np.shape[3])
+    
+    for i in range(hist_test_np.shape[0]):
+        X_test[i] = hist_test_np[i].reshape(hist_test_np.shape[1] * hist_test_np.shape[2] * hist_test_np.shape[3])
 
-    X = X[:, :-1]
-    X_sub = X_sub[:, :-1]
-    y = y[1:, 1]
+    X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
+    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
+    list_C = [0.01, 0.15, 0.016, 0.017, 0.018]
+    #list_gamma = [0.001,0.01,0.1,1.,10.,100.]
+#%%
+    parameters = dict()
+    for C in list_C:
+        accuracies_folds = list()
+        for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, 5):
+            clf = CrammerSingerSVM(C=C, epsilon=0.001, max_iter=300, kernel='linear')
+            clf.fit(X_train_train, y_train_train)
+            y_pred = clf.predict(X_valid)
+            acc = accuracy_score(y_valid, y_pred)
+            print("test score for fold", acc, ' C ', C)
+            accuracies_folds.append(acc)
+        print("test score for C =", C, np.mean(accuracies_folds))
+        parameters[C] = np.mean(accuracies_folds)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    list_C = [1.,10.,100.,1000.,10000.]
-    list_gamma = [0.001,0.01,0.1,1.,10.,100.]
-    for i in range(len(list_C)):
-        for j in range(len(list_gamma)):
-            print((i,j))
-            clf = CrammerSingerSVM(C=list_C[i], epsilon=0.01, max_iter=100,kernel='gaussian',gamma=list_gamma[j])
-            clf.fit(X_train, y_train)
-            y_pred = clf.predict(X_test)
-            print(y_pred)
-            print("test score", accuracy_score(y_test, y_pred), ' gamma ', list_gamma[j], ' C ', list_C[i])
-    print("it sucks")
-
+    print(parameters)
