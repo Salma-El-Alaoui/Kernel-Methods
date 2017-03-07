@@ -8,6 +8,8 @@ Created on Sun Mar  5 19:28:15 2017
 
 import numpy as np
 
+def linear_kernel(X, Y, param=None):
+    return np.dot(X, Y.T)
 
 def chi2_kernel(X, Y, gamma=1.):
     """
@@ -26,7 +28,7 @@ def chi2_kernel(X, Y, gamma=1.):
     return np.exp(gamma * kernel)
 
 
-def min_kernel(X, Y):
+def min_kernel(X, Y, param=None):
     """
     Min kernel (Histogram intersection kernel)
     K(x, y) = SUM_i min(x_i, y_i)
@@ -57,10 +59,9 @@ def euclidean_dist(X, Y):
     """
     norms_1 = (X ** 2).sum(axis=1)
     norms_2 = (Y ** 2).sum(axis=1)
-    print(norms_2)
     return np.abs(norms_1.reshape(-1, 1) + norms_2 - 2 * np.dot(X, Y.T))
 
 
 def rbf_kernel(X, Y, gamma):
     dists = euclidean_dist(X, Y)
-    return np.exp(gamma * dists)
+    return np.exp(-gamma * dists)
