@@ -3,16 +3,15 @@
 """
 Created on Wed Feb 15 14:38:54 2017
 @author: salma
-Multiclass SVMs (Crammer-Singer).
+Binary SVM and One vs One Multiclass SVM.
 """
 
 import numpy as np
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.metrics.pairwise import rbf_kernel
-import pandas as pd
-
 import cvxopt
+from equalization import equalize_item
+from image_utils import load_data
+from HoG import hog
+import pandas as pd
 
 
 class BinarySVM:
@@ -31,7 +30,6 @@ class BinarySVM:
         self.class_2 = None
 
     def _qp(self, H, e, A, b, C=np.inf, l=1e-8, verbose=False):
-
         # Gram matrix
         n = H.shape[0]
         H = cvxopt.matrix(H)
@@ -161,7 +159,7 @@ class OneVsOneSVM:
 
 
 if __name__ == '__main__':
-    from data_utils import datasets
+    from data_utils import datasets, cross_validation
     from kernels import rbf_kernel, linear_kernel
     from sklearn.datasets import load_iris
 
@@ -171,9 +169,3 @@ if __name__ == '__main__':
     clf.fit(X, y, K)
     print(clf.score(X, y))
 
-    iris = load_iris()
-    X = iris.data
-    y = iris.target
-    mlt_clf = OneVsOneSVM(C=0.1, kernel=linear_kernel, kernel_param=None)
-    mlt_clf.fit(X, y)
-    print(mlt_clf.score(X, y))

@@ -81,3 +81,13 @@ def datasets(name, n_points, sigma=None):
 def plot_dataset(X, y):
     plt.plot(X[y > 0, 0], X[y > 0, 1], 'rx')
     plt.plot(X[y < 0, 0], X[y < 0, 1], 'bx')
+
+
+def cross_validation(X, y, nb_folds):
+    subset_size = int(len(X) / nb_folds)
+    for k in range(nb_folds):
+        X_train = np.concatenate((X[:k * subset_size], X[(k + 1) * subset_size:]), axis=0)
+        X_test = X[k * subset_size:][:subset_size]
+        y_train =  np.concatenate((y[:k * subset_size], y[(k + 1) * subset_size:]), axis=0)
+        y_test = y[k * subset_size:][:subset_size]
+        yield X_train, y_train, X_test, y_test
