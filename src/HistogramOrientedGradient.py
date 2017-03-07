@@ -7,7 +7,7 @@ Created on Fri Mar  3 18:19:43 2017
 """
 import numpy as np
 from scipy.misc import imresize, imread
-#from image_utils import vec_to_img
+from image_utils import vec_to_img
 
 class HistogramOrientedGradient():
     
@@ -192,7 +192,9 @@ X_test = np.array(hist_test)
 
 
 #%%
-from crammer_singer_svm import CrammerSingerSVM
+from svm import OneVsOneSVM
+from kernels import rbf_kernel
+#from crammer_singer_svm import CrammerSingerSVM
 #X_train = np.concatenate((X_train_t, np.ones((len(X_train), 1))), axis=1)
 X_train_t = X_train[:4000]
 X_train_v = X_train[4000:]
@@ -200,11 +202,26 @@ X_train_v = X_train[4000:]
 y_train_t = y_train[:4000]
 y_train_v = y_train[4000:]
 
-clf = CrammerSingerSVM(C=0.016, epsilon=0.0001, max_iter=500, kernel='linear')
-clf.fit(X_train_t, y_train_t)
-y_pred = clf.predict(X_train_v)
+clf = OneVsOneSVM(C=100, kernel=rbf_kernel, kernel_param=1)
+#X_train_t = np.concatenate((X_train_t, np.ones((len(X_train_t), 1))), axis=1)
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
 
-print("score ", np.mean(y_pred == y_train_v))
+#print("score ", clf.score(X_train_v, y_train_v))
+#print("score ", np.mean(y_pred == y_train_v))
+#%%
+
+#%%
+import pandas as pd
+df = pd.DataFrame(y_pred, columns=['Prediction'])
+df.index += 1 
+df['Id'] = df.index
+cols = df.columns.tolist()
+cols = cols[-1:] + cols[0:-1]
+df = df[cols]
+df.to_csv("../submission.csv", index=False)
+
+
 #%%
 
 #histogram = hog.build_histogram(img)

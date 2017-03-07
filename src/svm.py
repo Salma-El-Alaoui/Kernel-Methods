@@ -142,10 +142,11 @@ class OneVsOneSVM:
                 k = K[ind, :]
                 k = k[:, ind]
                 self.clf_matrix[i][j - i - 1].fit(X=X[ind, :], y=y[ind], K=k)
+                print("fit Classifier ", i,j)
         return self
 
     def predict(self, X_test):
-        votes = np.zeros((X.shape[0], self.n_classes))
+        votes = np.zeros((X_test.shape[0], self.n_classes))
         for i in range(self.n_classes):
             for j in range(i + 1, self.n_classes):
                 y = self.clf_matrix[i][j - i - 1].predict(X_test)
