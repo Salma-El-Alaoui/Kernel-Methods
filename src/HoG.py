@@ -190,7 +190,7 @@ def compute_coefs(csx, csy, dx, dy, n_cells_x, n_cells_y):
         ccoefs[:dy, -dx:] = fliplr(y)*(1 - x)
         ccoefs[-dy:, :dx] = (1 - y)*flipud(x)
         ccoefs[-dy:, -dx:] = fliplr(y)*flipud(x)
-
+        print(ccoefs)
         coefs = np.zeros((csx*n_cells - dx, csy*n_cells - dy))
         coefs[:-dy, :-dx] = np.tile(ccoefs, (n_cells - 1, n_cells - 1))
 
@@ -198,7 +198,8 @@ def compute_coefs(csx, csy, dx, dy, n_cells_x, n_cells_y):
         coefs[:-dy, -dx:] = np.tile(np.concatenate(((1 - x), np.flipud(x))), (n_cells - 1, dy))
         coefs[-dy:, :-dx] = np.tile(np.concatenate(((1 - y), np.fliplr(y)), axis=1), (dx, n_cells - 1))
         coefs[-dy:, -dx:] = 1
-
+        print("coefs.shape ",coefs.shape)
+        print("csx, ds, n_cells_x ",csx,dx,n_cells)
         return coefs
 
 
@@ -222,7 +223,7 @@ def interpolate_orientation(orientation, sx, sy, nbins, signed_orientation):
             contains the pre histogram of orientation built using linear interpolation
             to interpolate the orientations to their bins
     """
-    
+    print("look here ", np.array(orientation).shape,sx,sy,nbins,signed_orientation)
     if signed_orientation:
         max_angle = 360
     else:
@@ -242,7 +243,9 @@ def interpolate_orientation(orientation, sx, sy, nbins, signed_orientation):
     for i in range(nbins):
         temp_coefs[:, :, i] += np.where(b0==i, (1 - b), 0)
         temp_coefs[:, :, i] += np.where(b1==i, b, 0)
-    
+    print("interpolate orientation")
+    print("temp coefs ", temp_coefs.shape)
+    print("___")
     return temp_coefs
 
 
@@ -320,8 +323,9 @@ def interpolate(magnitude, orientation, csx, csy, sx, sy, n_cells_x, n_cells_y, 
     dy = csy//2
     
     temp_coefs = interpolate_orientation(orientation, sx, sy, nbins, signed_orientation)
-
-
+    print("***begin interpolate***")
+    print("magnitude ",np.array(magnitude).shape)
+    print("orientation ",np.array(orientation).shape)
     # Coefficients of the spatial interpolation in every direction
     coefs = compute_coefs(csx, csy, dx, dy, n_cells_x, n_cells_y)
     
@@ -330,6 +334,10 @@ def interpolate(magnitude, orientation, csx, csy, sx, sy, n_cells_x, n_cells_y, 
     temp[:-dy, :-dx, :] += temp_coefs[dy:, dx:, :]*\
         (magnitude[dy:, dx:]*coefs[-(n_cells_y*csy - dy):, -(n_cells_x*csx - dx):])[:, :, np.newaxis]
     
+    print("coefs[-(n_cells_y*csy - dy):, -(n_cells_x*csx - dx):]) ",n_cells_y*csy - dy)
+    print(coefs.shape)
+    print(coefs[-(n_cells_y*csy - dy):, -(n_cells_x*csx - dx):].shape)
+    print((coefs-coefs[-(n_cells_y*csy - dy):, -(n_cells_x*csx - dx):]).sum(axis=-1).sum(axis=-1))
     # hist(y1, x0)
     coefs = np.rot90(coefs)
     temp[dy:, :-dx, :] += temp_coefs[:-dy, dx:, :]*\
@@ -347,7 +355,7 @@ def interpolate(magnitude, orientation, csx, csy, sx, sy, n_cells_x, n_cells_y, 
     
     # Compute the histogram: sum over the cells
     orientation_histogram = temp.reshape((n_cells_y, csy, n_cells_x, csx, nbins)).sum(axis=3).sum(axis=1)
-    
+    print("***begin interpolate***")
     return orientation_histogram
 
 
@@ -601,7 +609,7 @@ def histogram_from_gradients(gradientx, gradienty, cell_size, cells_per_block, s
          nbins=nbins, visualise=visualise, normalise=normalise, flatten=flatten)
 
 
-def hog(image, cell_size=(2, 2), cells_per_block=(1, 1), signed_orientation=False,
+def hog(image, cell_size=(4, 4), cells_per_block=(1, 1), signed_orientation=False,
         nbins=9, visualise=False, normalise=True, flatten=False, same_size=True):
     """ builds a histogram of oriented gradient (HoG) from the provided image
     Compute a Histogram of Oriented Gradients (HOG) by
@@ -652,3 +660,24 @@ def hog(image, cell_size=(2, 2), cells_per_block=(1, 1), signed_orientation=Fals
          signed_orientation=signed_orientation, cells_per_block=cells_per_block,
          nbins=nbins, visualise=visualise, normalise=normalise, flatten=flatten)
     
+#%%
+from equalization import equalize_item
+from scipy.misc import imresize,imread
+from image_utils import load_data
+X_train, X_test, y_train = load_data()
+#%%
+id_img = 108
+image = X_train[id_img]
+
+img = equalize_item(image)
+#%%
+
+img2 = imresize(img, (128,128), interp="bilinear") 
+histogram = hog(img,visualise=False)
+
+#%% 
+truc = np.ones((32,32))*75.
+machin = interpolate_orientation(truc,32,32,9,False)
+
+print(machin.shape)
+print(machin[1,1])
