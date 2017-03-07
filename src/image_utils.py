@@ -99,3 +99,10 @@ def load_data():
     y_train = y_train[1:,1]
     
     return X_train, X_test, y_train
+
+def vec_to_img(item):
+    img = np.zeros((32,32,3))
+    img[:,:,0] = item[:1024].reshape(32,32)
+    img[:,:,1] = item[1024:2048].reshape(32,32)
+    img[:,:,2] = item[2048:].reshape(32,32)
+    return img
