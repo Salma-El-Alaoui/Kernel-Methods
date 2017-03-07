@@ -49,3 +49,18 @@ def gen_min_kernel(X, Y, alpha=1.):
     http://perso.lcpc.fr/tarel.jean-philippe/publis/jpt-icip05.pdf
     """
     return min_kernel(np.abs(X) ** alpha, np.abs(Y) ** alpha)
+
+
+def euclidean_dist(X, Y):
+    """
+    matrix of pairwise squared Euclidean distances
+    """
+    norms_1 = (X ** 2).sum(axis=1)
+    norms_2 = (Y ** 2).sum(axis=1)
+    print(norms_2)
+    return np.abs(norms_1.reshape(-1, 1) + norms_2 - 2 * np.dot(X, Y.T))
+
+
+def rbf_kernel(X, Y, gamma):
+    dists = euclidean_dist(X, Y)
+    return np.exp(gamma * dists)
