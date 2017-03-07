@@ -342,9 +342,8 @@ def interpolate(magnitude, orientation, csx, csy, sx, sy, n_cells_x, n_cells_y, 
     
     # hist(y0, x1)
     coefs = np.rot90(coefs)
-    temp[:-dy, dx:, :] += temp_coefs[dy:, :-dx, :]*\
-        (magnitude[dy:, :-dx]*coefs[-(n_cells_y*csy - dy):, :(n_cells_x*csx - dx)])[:, :, np.newaxis]
     
+    print(temp / temp_coefs * magnitude[:,:,np.newaxis])
     # Compute the histogram: sum over the cells
     orientation_histogram = temp.reshape((n_cells_y, csy, n_cells_x, csx, nbins)).sum(axis=3).sum(axis=1)
     
@@ -652,3 +651,14 @@ def hog(image, cell_size=(2, 2), cells_per_block=(1, 1), signed_orientation=Fals
          signed_orientation=signed_orientation, cells_per_block=cells_per_block,
          nbins=nbins, visualise=visualise, normalise=normalise, flatten=flatten)
     
+#%%
+
+from equalization import equalize_item
+from scipy.misc import imresize, imread
+from image_utils import load_data
+#X_train,X_test,y_train = load_data()
+#%%
+id_img = 108
+image = X_train[id_img]
+img = equalize_item (image)
+histogram = hog(img, visualise = False)
