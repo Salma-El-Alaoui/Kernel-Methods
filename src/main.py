@@ -39,21 +39,21 @@ def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
 #TODO: encapsulate all of the following in a function to be put in main
 
 # define some flags
-equalize = False
+equalize = True
 rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
-n_cells_hog = 8
+n_cells_hog = 4
 
 kernel = rbf_kernel # or any other kernel from the kernels.py file
 classifier = "one_vs_one"
 
-cross_validation = False
-dict_param = {'kernel_param': [1, 2, 3], 'C': [100, 150, 200]}
+cross_validation = True
+dict_param = {'kernel_param': [3,5,7], 'C': [100]}
 nb_folds = 5
 
-train_test_val = True
+train_test_val = False
 pr_train = 0.8
 
-make_submission = True
+make_submission = False
 submission_name = "test" # suffix to submission file
 
 print("Loading Features ...")
