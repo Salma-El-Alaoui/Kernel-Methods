@@ -1,5 +1,3 @@
-
-
 from HistogramOrientedGradient import HistogramOrientedGradient
 from equalization import equalize_item
 from data_utils import load_data, train_test_split, write_submission
@@ -12,26 +10,27 @@ from KernelPCA import KernelPCAOurs
 
 from sklearn.decomposition import PCA, KernelPCA
 
+
 # TODO: shouldn't be here, but somewhere related to hog
 # TODO: add capacity to store features
-def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
+def load_hog_features(rgb=False, equalize=True, n_cells_hog=8):
     data_train, data_test, y_train = load_data()
     hist_train = []
-    hog = HistogramOrientedGradient(n_cells=n_cells_hog,cell_size=int(32./n_cells_hog))
+    hog = HistogramOrientedGradient(n_cells=n_cells_hog, cell_size=int(32. / n_cells_hog))
     for id_img in range(len(data_train)):
         image = data_train[id_img]
         if equalize:
             img = equalize_item(image, rgb=rgb, verbose=False)
         else:
-            img = vec_to_img(image,rgb=rgb)
+            img = vec_to_img(image, rgb=rgb)
         hist_train.append(hog._build_histogram(img))
     hist_test = []
     for id_img in range(len(data_test)):
         image = data_test[id_img]
         if equalize:
-            img = equalize_item(image, rgb=rgb,verbose=False)
+            img = equalize_item(image, rgb=rgb, verbose=False)
         else:
-            img = vec_to_img(image,rgb=rgb)
+            img = vec_to_img(image, rgb=rgb)
         hist_test.append(hog._build_histogram(img))
     X_train = np.array(hist_train)
     X_test = np.array(hist_test)
@@ -39,47 +38,42 @@ def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
     return X_train, X_test, y_train
 
 
-#TODO: encapsulate all of the following in a function to be put in main
+# TODO: encapsulate all of the following in a function to be put in main
 
 # define some flags
 equalize = True
-rgb = True # whether or not to consider 3 different channels (if false, mean of 3 channels)
+rgb = True  # whether or not to consider 3 different channels (if false, mean of 3 channels)
 n_cells_hog = 4
 
-kernel = rbf_kernel # or any other kernel from the kernels.py file
+kernel = rbf_kernel  # or any other kernel from the kernels.py file
 classifier = "one_vs_one"
 
 cross_validation = False
-dict_param = {'kernel_param': [1,3,5], 'C': [100,1000]}
+dict_param = {'kernel_param': [1, 3, 5], 'C': [100, 1000]}
 nb_folds = 5
 
 train_test_val = True
 pr_train = 0.8
 
 make_submission = False
-submission_name = "test" # suffix to submission file
+submission_name = "test"  # suffix to submission file
 
-save_features = False 
+save_features = False
 path_train_load = "../features/rgb_equalize_train.npy"
 path_test_load = "../features/rgb_equalize_test.npy"
 load_features = True
 path_train_save = "../features/rgb_equalize_train"
-path_test_save ="../features/rgb_equalize_test"
-
-
-
+path_test_save = "../features/rgb_equalize_test"
 
 if load_features:
     print("Loading Features from file...")
     X_train = np.load(path_train_load)
     X_test = np.load(path_test_load)
     y_train = np.genfromtxt('../data/Ytr.csv', delimiter=',')
-    y_train = y_train[1:,1]
+    y_train = y_train[1:, 1]
 else:
     print("Computing Features ...")
-    X_train, X_test, y_train = load_hog_features(rgb=rgb,equalize=equalize,n_cells_hog=n_cells_hog)
-
-
+    X_train, X_test, y_train = load_hog_features(rgb=rgb, equalize=equalize, n_cells_hog=n_cells_hog)
 
 if cross_validation:
     if classifier == "one_vs_one":
@@ -87,7 +81,7 @@ if cross_validation:
         parameters_dic, best_parameter = grid_search_ovo(X_train=X_train, y_train=y_train, dict_param=dict_param,
                                                          nb_folds=nb_folds, kernel=kernel)
     elif classifier == "crammer_singer":
-        #TODO
+        # TODO
         pass
 
 if train_test_val:
@@ -95,18 +89,19 @@ if train_test_val:
     X_train_t, X_train_v, y_train_t, y_train_v = train_test_split(X_train, y_train, pr_train)
     print("Performing KPCA ...")
     kpca = KernelPCAOurs(kernel="rbf", gamma = 0.5, n_components=300)
+
     X_train_kpca = kpca.fit_transform(X_train_t)
     X_test_kpca = kpca.transform(X_train_v)
     if classifier == "one_vs_one":
         clf = OneVsOneSVM(C=1000, kernel=kernel, kernel_param =2)
         print("Fitting classifier...")
-        #clf.fit(X_train_t, y_train_t)
-        #score = clf.score(X_train_v, y_train_v)
+        # clf.fit(X_train_t, y_train_t)
+        # score = clf.score(X_train_v, y_train_v)
         clf.fit(X_train_kpca, y_train_t)
         score = clf.score(X_test_kpca, y_train_v)
         print("Accuracy score on validation dataset: ", score)
     elif classifier == "crammer_singer":
-        #TODO
+        # TODO
         pass
 
 if make_submission:
@@ -118,11 +113,9 @@ if make_submission:
         print("Writing submission...")
         write_submission(y_pred, submission_name)
     elif classifier == "crammer_singer":
-        #TODO
+        # TODO
         pass
 
 if save_features:
-    np.save(path_train_save,X_train)
-    np.save(path_test_save,X_test)
-
-
+    np.save(path_train_save, X_train)
+    np.save(path_test_save, X_test)
