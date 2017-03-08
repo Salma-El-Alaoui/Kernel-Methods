@@ -43,7 +43,7 @@ def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
 # define some flags
 equalize = True
 rgb = True # whether or not to consider 3 different channels (if false, mean of 3 channels)
-n_cells_hog = 4
+n_cells_hog = 8
 
 kernel = rbf_kernel # or any other kernel from the kernels.py file
 classifier = "one_vs_one"
@@ -58,12 +58,14 @@ pr_train = 0.8
 make_submission = False
 submission_name = "test" # suffix to submission file
 
-save_features = False 
-path_train_load = "../features/rgb_equalize_train.npy"
-path_test_load = "../features/rgb_equalize_test.npy"
+
 load_features = True
-path_train_save = "../features/rgb_equalize_train"
-path_test_save ="../features/rgb_equalize_test"
+path_train_load = "../features/rgb_equalize_4c_train.npy"
+path_test_load = "../features/rgb_equalize_4c_test.npy"
+
+save_features = False 
+path_train_save = "../features/change_path_train"
+path_test_save ="../features/change_path_test"
 
 
 
@@ -93,7 +95,7 @@ if train_test_val:
     print("Splitting into train and validation datasets ...")
     X_train_t, X_train_v, y_train_t, y_train_v = train_test_split(X_train, y_train, pr_train)
     print("Performing KPCA ...")
-    kpca = KernelPCA(kernel="rbf", fit_inverse_transform=True, gamma = 0.5, n_components=300 )
+    kpca = KernelPCA(kernel="rbf", fit_inverse_transform=True, gamma = 0.65, n_components=500)
     X_train_kpca = kpca.fit_transform(X_train_t)
     X_test_kpca = kpca.transform(X_train_v)
     if classifier == "one_vs_one":
