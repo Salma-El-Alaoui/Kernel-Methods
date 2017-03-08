@@ -3,6 +3,7 @@
 from HistogramOrientedGradient import HistogramOrientedGradient
 from equalization import equalize_item
 from data_utils import load_data, train_test_split, write_submission
+from image_utils import vec_to_img
 from svm import OneVsOneSVM, grid_search_ovo
 from kernels import rbf_kernel
 import numpy as np
@@ -10,18 +11,24 @@ import numpy as np
 
 # TODO: shouldn't be here, but somewhere related to hog
 # TODO: add capacity to store features
-def load_hog_features():
+def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
     data_train, data_test, y_train = load_data()
     hist_train = []
-    hog = HistogramOrientedGradient()
+    hog = HistogramOrientedGradient(n_cells=n_cells_hog,cell_size=int(32./n_cells_hog))
     for id_img in range(len(data_train)):
         image = data_train[id_img]
-        img = equalize_item(image, verbose=False)
+        if equalize:
+            img = equalize_item(image, rgb=rgb, verbose=False)
+        else:
+            img = vec_to_img(image,rgb=rgb)
         hist_train.append(hog._build_histogram(img))
     hist_test = []
     for id_img in range(len(data_test)):
         image = data_test[id_img]
-        img = equalize_item(image, verbose=False)
+        if equalize:
+            img = equalize_item(image, rgb=rgb,verbose=False)
+        else:
+            img = vec_to_img(image,rgb=rgb)
         hist_test.append(hog._build_histogram(img))
     X_train = np.array(hist_train)
     X_test = np.array(hist_test)
@@ -32,6 +39,10 @@ def load_hog_features():
 #TODO: encapsulate all of the following in a function to be put in main
 
 # define some flags
+equalize = False
+rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
+n_cells_hog = 8
+
 kernel = rbf_kernel # or any other kernel from the kernels.py file
 classifier = "one_vs_one"
 
@@ -46,7 +57,7 @@ make_submission = True
 submission_name = "test" # suffix to submission file
 
 print("Loading Features ...")
-X_train, X_test, y_train = load_hog_features()
+X_train, X_test, y_train = load_hog_features(rgb=rgb,equalize=equalize,n_cells_hog=n_cells_hog)
 
 if cross_validation:
     if classifier == "one_vs_one":

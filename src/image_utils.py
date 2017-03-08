@@ -88,9 +88,14 @@ def show_channel(img,channel):
         plt.imshow(image, cmap='gray')
 
 
-def vec_to_img(item):
+def vec_to_img(item,rgb=False):
     img = np.zeros((32,32,3))
     img[:,:,0] = item[:1024].reshape(32,32)
     img[:,:,1] = item[1024:2048].reshape(32,32)
     img[:,:,2] = item[2048:].reshape(32,32)
-    return img
+    
+    if not rgb:
+        return img
+        
+    else:
+        return np.uint8((0.2126 * img[:,:,0]) + np.uint8(0.7152 * img[:,:,1]) + np.uint8(0.0722 * img[:,:,2]))
