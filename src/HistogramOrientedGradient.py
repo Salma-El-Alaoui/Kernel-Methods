@@ -142,89 +142,18 @@ class HistogramOrientedGradient():
         else :
             raise Exception("Reshape, please :)")
     
-        for i,item in enumerate(X):
+        for i, item in enumerate(X):
             feat[i] = self._build_histogram(item)
             
         return feat
         
 
-#%%
-import matplotlib.pyplot as plt
-hog = HistogramOrientedGradient()
-#interp = hog._bilinear_interpolation()
-#plt.figure()
-#plt.imshow(interp)
-#print(interp[10:15,10:15])
-#print(hog._raw_histogram()[2:6,2:6,:8])
-#orientation = np.ones((32,32))*47
-#print(np.unique(hog._bilinear_interpolation().flatten()).shape)
-#print(hog._orientation_interpolation(orientation)[0,0,:])   
-#%%
-from equalization import equalize_item
-from scipy.misc import imresize, imread
-from image_utils import load_data
-data_train,data_test,y_train = load_data()
-#%%
-id_img = 108
-image = data_train[id_img]
-img = vec_to_img(image)
-#%%
-hist_train = []
-hog = HistogramOrientedGradient()
-for id_img in range(len(data_train)):
-    print(id_img)
-    image = data_train[id_img]
-    img = equalize_item(image, verbose=False)
-    hist_train.append(hog._build_histogram(img))
-    
-#%%
-hist_test = []
-for id_img in range(len(data_test)):
-    print(id_img)
-    image = data_test[id_img]
-    img = equalize_item(image, verbose=False)
-    hist_test.append(hog._build_histogram(img))
-    
-    
-#%%
-X_train = np.array(hist_train)
-X_test = np.array(hist_test)
-
-
-#%%
-from svm import OneVsOneSVM
-from kernels import rbf_kernel
-#from crammer_singer_svm import CrammerSingerSVM
-#X_train = np.concatenate((X_train_t, np.ones((len(X_train), 1))), axis=1)
-X_train_t = X_train[:4000]
-X_train_v = X_train[4000:]
-
-y_train_t = y_train[:4000]
-y_train_v = y_train[4000:]
-
-clf = OneVsOneSVM(C=100, kernel=rbf_kernel, kernel_param=1)
-#X_train_t = np.concatenate((X_train_t, np.ones((len(X_train_t), 1))), axis=1)
-clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
-
-#print("score ", clf.score(X_train_v, y_train_v))
-#print("score ", np.mean(y_pred == y_train_v))
-#%%
-
-#%%
-import pandas as pd
-df = pd.DataFrame(y_pred, columns=['Prediction'])
-df.index += 1 
-df['Id'] = df.index
-cols = df.columns.tolist()
-cols = cols[-1:] + cols[0:-1]
-df = df[cols]
-df.to_csv("../submission.csv", index=False)
-
-
-#%%
-
-#histogram = hog.build_histogram(img)
-#histograms = hog.extract_features(X_train)
-#print(len(histogram))
-
+# interp = hog._bilinear_interpolation()
+# plt.figure()
+# plt.imshow(interp)
+# print(interp[10:15,10:15])
+# print(hog._raw_histogram()[2:6,2:6,:8])
+# orientation = np.ones((32,32))*47
+# print(np.unique(hog._bilinear_interpolation().flatten()).shape)
+# print(hog._orientation_interpolation(orientation)[0,0,:])
+# %%

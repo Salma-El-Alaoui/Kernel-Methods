@@ -8,11 +8,10 @@ Binary SVM and One vs One Multiclass SVM.
 
 import numpy as np
 import cvxopt
-from equalization import equalize_item
-from image_utils import load_data
-from HoG import hog
-import pandas as pd
-
+from data_utils import datasets, cross_validation
+from kernels import rbf_kernel, linear_kernel
+from sklearn.datasets import load_iris
+import operator
 
 class BinarySVM:
 
@@ -142,7 +141,6 @@ class OneVsOneSVM:
                 k = K[ind, :]
                 k = k[:, ind]
                 self.clf_matrix[i][j - i - 1].fit(X=X[ind, :], y=y[ind], K=k)
-                print("fit Classifier ", i,j)
         return self
 
     def predict(self, X_test):
@@ -159,14 +157,57 @@ class OneVsOneSVM:
         return np.mean(y_pred == y)
 
 
-if __name__ == '__main__':
-    from data_utils import datasets, cross_validation
-    from kernels import rbf_kernel, linear_kernel
-    from sklearn.datasets import load_iris
+def grid_search_ovo(X_train, y_train, dict_param, nb_folds, kernel, kernel_param=None, verbose=True):
+    parameters = dict()
+    if 'kernel_param' in dict_param:
+        for C in dict_param['C']:
+            for kernel_param in dict_param['kernel_param']:
+                accuracies_folds = list()
+                for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
+                    clf = OneVsOneSVM(C=C, kernel=kernel, kernel_param=kernel_param)
+                    clf.fit(X_train_train, y_train_train)
+                    acc = clf.score(X_valid, y_valid)
+                    accuracies_folds.append(acc)
+                if verbose:
+                    print("\tC = ", C, "kernel param = ", kernel_param, "---- score = ", np.mean(accuracies_folds))
+                parameters[("C", C, "kernel_param", + kernel_param)] = np.mean(accuracies_folds)
+    else:
+        for C in dict_param['C']:
+            accuracies_folds = list()
+            for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
+                clf = OneVsOneSVM(C=C, kernel=kernel, kernel_param=kernel_param)
+                clf.fit(X_train_train, y_train_train)
+                acc = clf.score(X_valid, y_valid)
+                accuracies_folds.append(acc)
+            if verbose:
+                print("\tC = ", C, "kernel parameter = ", kernel_param, "---- score = ", np.mean(accuracies_folds))
+            parameters[("C", C, "kernel_param", + kernel_param)] = np.mean(accuracies_folds)
+
+    best_param = max(parameters.items(), key=operator.itemgetter(1))[0]
+    if verbose:
+        print("\tThe best set of parameters is: ", best_param)
+    return parameters, best_param
+
+def unit_test():
+    dict_param = {'kernel_param': [1, 2, 3], 'C': [1, 2, 3]}
 
     X, y = datasets(name='clowns', n_points=200, sigma=0.7)
     clf = BinarySVM(C=np.inf, kernel=rbf_kernel, kernel_param=3.)
     K = clf.kernel_matrix(X)
     clf.fit(X, y, K)
-    print(clf.score(X, y))
+    print("training score on toy dataset", clf.score(X, y))
+
+    iris = load_iris()
+    X = iris.data
+    Y = iris.target
+    _, best = grid_search_ovo(X, Y, dict_param, 5, rbf_kernel)
+    print("best parameter on iris", best)
+
+if __name__ == '__main__':
+    # unit_test()
+    pass
+
+
+
+
 

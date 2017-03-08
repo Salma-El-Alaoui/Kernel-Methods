@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 
 def datasets(name, n_points, sigma=None):
@@ -91,3 +92,36 @@ def cross_validation(X, y, nb_folds):
         y_train =  np.concatenate((y[:k * subset_size], y[(k + 1) * subset_size:]), axis=0)
         y_test = y[k * subset_size:][:subset_size]
         yield X_train, y_train, X_test, y_test
+
+
+def load_data():
+    X_train = np.genfromtxt('../data/Xtr.csv', delimiter=',')
+    print("\tX_train loaded")
+    y_train = np.genfromtxt('../data/Ytr.csv', delimiter=',')
+    print("\ty_train loaded")
+    X_test = np.genfromtxt('../data/Xte.csv', delimiter=',')
+    print("\tX_test loaded")
+    X_train = X_train[:,:-1]
+    X_test = X_test[:,:-1]
+    y_train = y_train[1:,1]
+    return X_train, X_test, y_train
+
+
+def write_submission(y_pred, submission_suffix):
+    df = pd.DataFrame(y_pred, columns=['Prediction'])
+    df.index += 1
+    df['Id'] = df.index
+    cols = df.columns.tolist()
+    cols = cols[-1:] + cols[0:-1]
+    df = df[cols]
+    file_name = "../submissions/submission_" + submission_suffix + ".csv"
+    df.to_csv(file_name, index=False)
+
+
+def train_test_split(X, y, pr_train):
+    n_train = int(pr_train * len(X))
+    X_train_t = X[:n_train]
+    X_train_v = X[n_train:]
+    y_train_t = y[:n_train]
+    y_train_v = y[n_train:]
+    return X_train_t, X_train_v, y_train_t, y_train_v

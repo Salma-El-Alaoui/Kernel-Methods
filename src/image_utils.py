@@ -5,8 +5,9 @@ Created on Wed Feb 22 11:07:38 2017
 
 @author: camillejandot
 """
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def show_image(img,incr_contrast=True):
     image = img.copy()
@@ -86,19 +87,6 @@ def show_channel(img,channel):
         plt.figure()
         plt.imshow(image, cmap='gray')
 
-def load_data():
-    X_train = np.genfromtxt('../data/Xtr.csv',delimiter=',')
-    print("X_train loaded")
-    y_train = np.genfromtxt('../data/Ytr.csv',delimiter=',')
-    print("y_train loaded")
-    X_test = np.genfromtxt('../data/Xte.csv',delimiter=',') 
-    print("X_test loaded")
-    
-    X_train = X_train[:,:-1]
-    X_test = X_test[:,:-1]
-    y_train = y_train[1:,1]
-    
-    return X_train, X_test, y_train
 
 def vec_to_img(item):
     img = np.zeros((32,32,3))

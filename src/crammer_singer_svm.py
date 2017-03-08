@@ -8,13 +8,7 @@ Multiclass SVMs (Crammer-Singer).
 """
 
 import numpy as np
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import rbf_kernel
-from equalization import equalize_item
-from image_utils import load_data
-from HoG import hog
-import pandas as pd
 from data_utils import cross_validation
 
 def simplex_proj(v, z=1):
@@ -30,7 +24,7 @@ def simplex_proj(v, z=1):
     
 
 class CrammerSingerSVM():
-    def __init__(self, C=1.0, kernel='linear', max_iter=100, epsilon=0.01, gamma=1.0):
+    def __init__(self, C=1.0, kernel='linear', max_iter=500, epsilon=0.0001, gamma=1.0):
         self.C = C
         self.max_iter = max_iter
         self.epsilon = epsilon
@@ -137,78 +131,15 @@ class CrammerSingerSVM():
             predictions = np.argmax(np.dot(K,self.alpha.T), axis=1) 
         return predictions
 
-
-
-def cross_validation(X, y, nb_folds):
-    subset_size = int(len(X) / nb_folds)
-    for k in range(nb_folds):
-        X_train = np.concatenate((X[:k * subset_size], X[(k + 1) * subset_size:]), axis=0)
-        X_test = X[k * subset_size:][:subset_size]
-        y_train =  np.concatenate((y[:k * subset_size], y[(k + 1) * subset_size:]), axis=0) 
-        y_test = y[k * subset_size:][:subset_size]
-        yield X_train, y_train, X_test, y_test
-
+#TODO: score function
+#TODO: cross validation function
+#TODO: handle kernels from kernels.py
 
 if __name__ == '__main__':
-#%%
-    X_train, X_test, y_train = load_data()
-
-    hist_train = []
-    for id_img in range(len(X_train)):
-        image = X_train[id_img]
-        img = equalize_item(image, verbose=False)
-        hist_train.append(hog(img, visualise=False))
-
-
-    hist_test = []
-    for id_img in range(len(X_test)):
-        image = X_test[id_img]
-        img = equalize_item(image, verbose=False)
-        hist_test.append(hog(img, visualise=False))
-
-    hist_train_np = np.array(hist_train)
-    hist_test_np = np.array(hist_test)
-
-    X_train = np.zeros((hist_train_np.shape[0], hist_train_np.shape[1] * hist_train_np.shape[2] * hist_train_np.shape[3]))
-    X_test = np.zeros((hist_test_np.shape[0], hist_test_np.shape[1] * hist_test_np.shape[2] * hist_test_np.shape[3]))
-
-    for i in range(hist_train_np.shape[0]):
-        X_train[i] = hist_train_np[i].reshape(hist_train_np.shape[1] * hist_train_np.shape[2] * hist_train_np.shape[3])
-
-    for i in range(hist_test_np.shape[0]):
-        X_test[i] = hist_test_np[i].reshape(hist_test_np.shape[1] * hist_test_np.shape[2] * hist_test_np.shape[3])
-
-    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
-    list_C = [0.1, 1, 10, 1000]
-    #list_gamma = [0.001,0.01,0.1,1.,10.,100.]
-#%%
-    parameters = dict()
-    for C in list_C:
-        accuracies_folds = list()
-        for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, 5):
-            #X_train_train = np.concatenate((X_train_train, np.ones((len(X_train_train), 1))), axis=1)
-            clf = CrammerSingerSVM(C=C, epsilon=0.0001, max_iter=500, kernel='gaussian')
-            clf.fit(X_train_train, y_train_train)
-            y_pred = clf.predict(X_valid)
-            acc = accuracy_score(y_valid, y_pred)
-            print("test score for fold", acc, ' C ', C)
-            accuracies_folds.append(acc)
-        print("test score for C =", C, np.mean(accuracies_folds))
-        parameters[C] = np.mean(accuracies_folds)
-
-    print(parameters)
-#%%
-X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
-clf = CrammerSingerSVM(C=0.016, epsilon=0.0001, max_iter=2000, kernel='linear')
-clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
-#%%
-df = pd.DataFrame(y_pred, columns=['Prediction'])
-df.index += 1 
-df['Id'] = df.index
-cols = df.columns.tolist()
-cols = cols[-1:] + cols[0:-1]
-df = df[cols]
-df.to_csv("../submission.csv", index=False)
+    pass
+    #X_train = np.concatenate((X_train, np.ones((len(X_train), 1))), axis=1)
+    #clf = CrammerSingerSVM(C=0.016, epsilon=0.0001, max_iter=2000, kernel='linear')
+    #clf.fit(X_train, y_train)
+    #y_pred = clf.predict(X_test)
 
 
