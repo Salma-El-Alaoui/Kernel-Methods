@@ -5,9 +5,10 @@ from equalization import equalize_item
 from data_utils import load_data, train_test_split, write_submission
 from image_utils import vec_to_img
 from svm import OneVsOneSVM, grid_search_ovo
-from kernels import rbf_kernel
+from kernels import simple_wavelet_kernel
 import numpy as np
 from scipy.misc import imresize
+from KernelPCA import KernelPCAOurs
 
 from sklearn.decomposition import PCA, KernelPCA
 
@@ -93,11 +94,11 @@ if train_test_val:
     print("Splitting into train and validation datasets ...")
     X_train_t, X_train_v, y_train_t, y_train_v = train_test_split(X_train, y_train, pr_train)
     print("Performing KPCA ...")
-    kpca = KernelPCA(kernel="rbf", fit_inverse_transform=True, gamma = 0.5, n_components=300 )
+    kpca = KernelPCAOurs(kernel="rbf", gamma = 0.5, n_components=300)
     X_train_kpca = kpca.fit_transform(X_train_t)
     X_test_kpca = kpca.transform(X_train_v)
     if classifier == "one_vs_one":
-        clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+        clf = OneVsOneSVM(C=1000, kernel=kernel, kernel_param =2)
         print("Fitting classifier...")
         #clf.fit(X_train_t, y_train_t)
         #score = clf.score(X_train_v, y_train_v)
