@@ -1,0 +1,52 @@
+##################
+RBF - Crossval
+equalize = True
+rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
+n_cells_hog = 4
+
+kernel = rbf_kernel # or any other kernel from the kernels.py file
+classifier = "one_vs_one"
+
+        C =  100 kernel param =  1 ---- score =  0.4922
+        C =  100 kernel param =  5 ---- score =  0.5384
+        C =  100 kernel param =  10 ---- score =  0.5336
+        C =  150 kernel param =  1 ---- score =  0.4924
+        C =  150 kernel param =  5 ---- score =  0.5384
+        C =  150 kernel param =  10 ---- score =  0.5336
+
+#####################
+
+RBF - gamma=3, C=100, one vs one
+
+###
+equalize = True
+rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
+n_cells_hog = 8
+
+kernel = rbf_kernel # or any other kernel from the kernels.py file
+classifier = "one_vs_one"
+
+	>>> 0.528 (validation set)
+
+###
+equalize = False
+rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
+n_cells_hog = 8
+
+kernel = rbf_kernel # or any other kernel from the kernels.py file
+classifier = "one_vs_one"
+
+	>>> 0.515 (validation set)  /!\  pas refait de grid search, donc les paramètres du kernel sont ceux qui marchent pour la version égalisée !
+
+###
+equalize = True
+rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
+n_cells_hog = 4
+
+kernel = rbf_kernel # or any other kernel from the kernels.py file
+classifier = "one_vs_one"
+
+
+	>>> 0.498 (validation set)  /!\  pas refait de grid search,
+
+
