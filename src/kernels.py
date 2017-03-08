@@ -8,8 +8,10 @@ Created on Sun Mar  5 19:28:15 2017
 
 import numpy as np
 
+
 def linear_kernel(X, Y, param=None):
     return np.dot(X, Y.T)
+
 
 def chi2_kernel(X, Y, gamma=1.):
     """
@@ -19,12 +21,12 @@ def chi2_kernel(X, Y, gamma=1.):
     (page 6)
     """
     kernel = np.zeros((X.shape[0], Y.shape[0]))
-    
+
     for d in range(X.shape[1]):
         column_1 = X[:, d].reshape(-1, 1)
         column_2 = Y[:, d].reshape(-1, 1)
-        kernel += (column_1 - column_2.T)**2 / (column_1 + column_2.T)
-    
+        kernel += (column_1 - column_2.T) ** 2 / (column_1 + column_2.T)
+
     return np.exp(gamma * kernel)
 
 
@@ -66,14 +68,16 @@ def rbf_kernel(X, Y, gamma):
     dists = euclidean_dist(X, Y)
     return np.exp(-gamma * dists)
 
-def laplacian_kernel(X,Y, sigma):
+
+def laplacian_kernel(X, Y, sigma):
     dists = euclidean_dist(X, Y)
     return np.exp(-1 / sigma * np.sqrt(dists))
 
-def mother_wavelet(X):
-    return np.cos(1.75*X)* np.exp(-X**2)
 
-def simple_wavelet_kernel(X,Y, param = 10):
-    column= mother_wavelet((X-Y)/param )
+def mother_wavelet(X):
+    return np.cos(1.75 * X) * np.exp(-X ** 2)
+
+
+def simple_wavelet_kernel(X, Y, param=10):
+    column = mother_wavelet((X - Y) / param)
     return np.product(column)
-    
