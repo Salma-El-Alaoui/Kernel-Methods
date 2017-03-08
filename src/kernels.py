@@ -65,3 +65,7 @@ def euclidean_dist(X, Y):
 def rbf_kernel(X, Y, gamma):
     dists = euclidean_dist(X, Y)
     return np.exp(-gamma * dists)
+
+def laplacian_kernel(X,Y, sigma):
+    dists = euclidean_dist(X, Y)
+    return np.exp(-1 / sigma * np.sqrt(dists))
