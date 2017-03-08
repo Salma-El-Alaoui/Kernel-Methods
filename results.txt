@@ -1,4 +1,51 @@
 ##################
+RBF - Train/Test
+equalize = True
+rob = True
+n_cells_hog = 4
+
+
+SI ON APPREND PCA SUR TRAIN ET TEST D UN COUP
+
+kpca = KernelPCA(kernel = « rbf » , gamma = 1., n_components = 1000)
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.557
+
+
+kpca = KernelPCA(kernel="linear", fit_inverse_transform=True, n_components=1500 )
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.539
+
+
+kpca = KernelPCA(kernel=« rbf", gamma = 0.6, fit_inverse_transform=True, n_components=1000 )
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.559
+
+kpca = KernelPCA(kernel=« rbf", gamma = 0.6, fit_inverse_transform=True, n_components=800 )
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.556
+
+kpca = KernelPCA(kernel=« rbf", gamma = 0.7, fit_inverse_transform=True, n_components=800 )
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.556
+
+kpca = KernelPCA(kernel=« rbf", gamma = 0.65, fit_inverse_transform=True, n_components=1000 )
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.561
+
+SI ON APPREND QUE SUR TRAIN
+
+kpca = KernelPCA(kernel = « rbf » , gamma = 0.1, n_components = 1000)
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:  0.537
+
+kpca = KernelPCA(kernel = « rbf » , gamma = 0.5, n_components = 1000)
+clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
+Accuracy score on validation dataset:
+0.553
+
+
+##################
 RBF - Crossval
 equalize = True
 rgb = False # whether or not to consider 3 different channels (if false, mean of 3 channels)
@@ -48,5 +95,6 @@ classifier = "one_vs_one"
 
 
 	>>> 0.498 (validation set)  /!\  pas refait de grid search,
+
 
 
