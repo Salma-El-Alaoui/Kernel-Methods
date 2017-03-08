@@ -11,11 +11,12 @@ from image_utils import vec_to_img
 
 class HistogramOrientedGradient():
     
-    def __init__(self,n_cells=8,cell_size=4,n_bins=18):
+    def __init__(self,n_cells=8,cell_size=4,n_bins=18, signed=True):
         self.n_cells = n_cells #nb of cells (one 1 axis)
         self.cell_size = cell_size #nb of pixel in cell (along 1 axis)
         self.n_bins = n_bins
         self.img_size = 32
+        self.signed = signed
         
     def _grad(self,img):
         # Compute gradient wrt 1st dimension
@@ -66,7 +67,11 @@ class HistogramOrientedGradient():
 #    
     def _orientation_interpolation(self,orientation):
         n_bins = self.n_bins
-        angle_bin = 360. / n_bins
+        if self.signed :
+            angle_max = 360.
+        else:
+            angle_max = 180.
+        angle_bin = angle_max / n_bins
         nums_bin_low = orientation // angle_bin
         nums_bin_high = (nums_bin_low + 1.) % n_bins
         
