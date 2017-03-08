@@ -3,32 +3,38 @@
 from HistogramOrientedGradient import HistogramOrientedGradient
 from equalization import equalize_item
 from data_utils import load_data, train_test_split, write_submission
-from image_utils import vec_to_img
+from image_utils import vec_to_img,rgb_to_yuv,yuv_to_rgb,rgb_to_opprgb
 from svm import OneVsOneSVM, grid_search_ovo
 from kernels import rbf_kernel
 import numpy as np
 from scipy.misc import imresize
 
-from sklearn.decomposition import PCA, KernelPCA
+from KernelPCA import KernelPCA
 
 # TODO: shouldn't be here, but somewhere related to hog
 # TODO: add capacity to store features
-def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
+def load_hog_features(rgb=False,equalize=True,yuv=False,n_cells_hog=8):
     data_train, data_test, y_train = load_data()
+    
     hist_train = []
-    hog = HistogramOrientedGradient(n_cells=n_cells_hog,cell_size=int(32./n_cells_hog))
+    hog = HistogramOrientedGradient(n_cells=n_cells_hog,cell_size=int(32./n_cells_hog))   
     for id_img in range(len(data_train)):
         image = data_train[id_img]
         if equalize:
             img = equalize_item(image, rgb=rgb, verbose=False)
+        elif yuv:
+            img = rgb_to_opprgb(image)
         else:
             img = vec_to_img(image,rgb=rgb)
         hist_train.append(hog._build_histogram(img))
     hist_test = []
+    
     for id_img in range(len(data_test)):
         image = data_test[id_img]
         if equalize:
             img = equalize_item(image, rgb=rgb,verbose=False)
+        elif yuv:
+            img = rgb_to_opprgb(image)
         else:
             img = vec_to_img(image,rgb=rgb)
         hist_test.append(hog._build_histogram(img))
@@ -43,7 +49,8 @@ def load_hog_features(rgb=False,equalize=True,n_cells_hog=8):
 # define some flags
 equalize = True
 rgb = True # whether or not to consider 3 different channels (if false, mean of 3 channels)
-n_cells_hog = 8
+n_cells_hog = 4
+yuv = False
 
 kernel = rbf_kernel # or any other kernel from the kernels.py file
 classifier = "one_vs_one"
@@ -60,13 +67,12 @@ submission_name = "test" # suffix to submission file
 
 
 load_features = True
-path_train_load = "../features/rgb_equalize_4c_train.npy"
-path_test_load = "../features/rgb_equalize_4c_test.npy"
+path_train_load = "../features/rgb_equalize_8c_train.npy"
+path_test_load = "../features/rgb_equalize_8c_test.npy"
 
 save_features = False 
 path_train_save = "../features/change_path_train"
 path_test_save ="../features/change_path_test"
-
 
 
 
@@ -94,8 +100,8 @@ if cross_validation:
 if train_test_val:
     print("Splitting into train and validation datasets ...")
     X_train_t, X_train_v, y_train_t, y_train_v = train_test_split(X_train, y_train, pr_train)
-    print("Performing KPCA ...")
-    kpca = KernelPCA(kernel="rbf", fit_inverse_transform=True, gamma = 0.65, n_components=500)
+    print("Performing KPCA ....")
+    kpca = KernelPCA(kernel="rbf", gamma = 0.65, n_components=800)
     X_train_kpca = kpca.fit_transform(X_train_t)
     X_test_kpca = kpca.transform(X_train_v)
     if classifier == "one_vs_one":

@@ -100,3 +100,36 @@ def vec_to_img(item,rgb=False):
     else:
         ret = (0.2126 * img[:,:,0]) + (0.7152 * img[:,:,1]) + (0.0722 * img[:,:,2])
         return ret
+
+def rgb_to_yuv(item):
+    img_yuv = np.zeros((32,32,3))
+    yuv_mult = np.array([[0.299,0.587,0.114],[-0.14713,-0.28886,0.436],[0.615,-0.51498,-0.10001]])
+    img = vec_to_img(item,rgb=True)
+    
+    img_yuv[:,:,0] = yuv_mult[0,0]*img[:,:,0] + yuv_mult[0,1]*img[:,:,1] + yuv_mult[0,2]*img[:,:,2]
+    img_yuv[:,:,1] = yuv_mult[1,0]*img[:,:,0] + yuv_mult[1,1]*img[:,:,1] + yuv_mult[1,2]*img[:,:,2]
+    img_yuv[:,:,2] = yuv_mult[2,0]*img[:,:,0] + yuv_mult[2,1]*img[:,:,1] + yuv_mult[2,2]*img[:,:,2]
+
+    return img_yuv
+
+def yuv_to_rgb(item):
+    img_yuv = np.zeros((32,32,3))
+    yuv_mult = np.array([[1.,0.,1,13983],[1.,-0.39465,-0.58060],[1.,2.03211,0.]])
+    img = vec_to_img(item,rgb=True)
+    
+    img_yuv[:,:,0] = yuv_mult[0,0]*img[:,:,0] + yuv_mult[0,1]*img[:,:,1] + yuv_mult[0,2]*img[:,:,2]
+    img_yuv[:,:,1] = yuv_mult[1,0]*img[:,:,0] + yuv_mult[1,1]*img[:,:,1] + yuv_mult[1,2]*img[:,:,2]
+    img_yuv[:,:,2] = yuv_mult[2,0]*img[:,:,0] + yuv_mult[2,1]*img[:,:,1] + yuv_mult[2,2]*img[:,:,2]
+
+    return img_yuv
+
+def rgb_to_opprgb(item):
+    img_opp = np.zeros((32,32,3))
+    opp_mult = np.array([[1.,0.,1,13983],[1.,-0.39465,-0.58060],[1.,2.03211,0.]])
+    img = vec_to_img(item,rgb=True)
+
+    img_opp[:,:,0] = opp_mult[0,0]*img[:,:,0] + opp_mult[0,1]*img[:,:,1] + opp_mult[0,2]*img[:,:,2]
+    img_opp[:,:,1] = opp_mult[1,0]*img[:,:,0] + opp_mult[1,1]*img[:,:,1] + opp_mult[1,2]*img[:,:,2]
+    img_opp[:,:,2] = opp_mult[2,0]*img[:,:,0] + opp_mult[2,1]*img[:,:,1] + opp_mult[2,2]*img[:,:,2]
+
+    return img_opp
