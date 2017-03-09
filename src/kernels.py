@@ -78,8 +78,8 @@ def mother_wavelet(X):
     return np.cos(1.75 * X) * np.exp(-X ** 2)
 
 
-def simple_wavelet_kernel(X,Y, param = 10):
-    mat= mother_wavelet((X-Y)/param )
-    return np.prod(mat, axis =1)
+def simple_wavelet_kernel(X, Y, param=0):
+    mat= mother_wavelet((X-Y)/param)
+    return np.prod(mat, axis=1)
     
 

@@ -12,6 +12,7 @@ from data_utils import datasets, cross_validation
 from kernels import rbf_kernel, linear_kernel
 from sklearn.datasets import load_iris
 import operator
+from KernelPCA import KernelPCA
 
 
 class BinarySVM:
@@ -158,32 +159,24 @@ class OneVsOneSVM:
         return np.mean(y_pred == y)
 
 
-def grid_search_ovo(X_train, y_train, dict_param, nb_folds, kernel, kernel_param=None, verbose=True):
+def grid_search_ovo(X_train, y_train, dict_param, nb_folds, verbose=True):
     parameters = dict()
-    if 'kernel_param' in dict_param:
-        for C in dict_param['C']:
-            for kernel_param in dict_param['kernel_param']:
-                accuracies_folds = list()
-                for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
-                    clf = OneVsOneSVM(C=C, kernel=kernel, kernel_param=kernel_param)
-                    clf.fit(X_train_train, y_train_train)
-                    acc = clf.score(X_valid, y_valid)
-                    accuracies_folds.append(acc)
-                if verbose:
-                    print("\tC = ", C, "kernel param = ", kernel_param, "---- score = ", np.mean(accuracies_folds))
-                parameters[("C", C, "kernel_param", + kernel_param)] = np.mean(accuracies_folds)
-    else:
-        for C in dict_param['C']:
-            accuracies_folds = list()
-            for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
-                clf = OneVsOneSVM(C=C, kernel=kernel, kernel_param=kernel_param)
-                clf.fit(X_train_train, y_train_train)
-                acc = clf.score(X_valid, y_valid)
-                accuracies_folds.append(acc)
-            if verbose:
-                print("\tC = ", C, "kernel parameter = ", kernel_param, "---- score = ", np.mean(accuracies_folds))
-            parameters[("C", C, "kernel_param", + kernel_param)] = np.mean(accuracies_folds)
-
+    for C in dict_param['C']:
+        for kernel_param in dict_param['kernel_param']:
+            for nb_components in dict_param['nb_components']:
+                for kernel_param_pca in dict_param['kernel_param_pca']:
+                    accuracies_folds = list()
+                    for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
+                        kpca = KernelPCA(kernel=dict_param['kernel_pca'], gamma=kernel_param_pca, n_components=nb_components)
+                        X_train_train = kpca.fit_transform(X_train_train)
+                        X_valid = kpca.transform(X_valid)
+                        clf = OneVsOneSVM(C=C, kernel=dict_param['kernel'], kernel_param=kernel_param)
+                        clf.fit(X_train_train, y_train_train)
+                        acc = clf.score(X_valid, y_valid)
+                        accuracies_folds.append(acc)
+                    if verbose:
+                        print("\tC = ", C, "kernel param = ", kernel_param, "kernel param for PCA = ", kernel_param_pca, "nb_components = ", nb_components, "---- score = ", np.mean(accuracies_folds))
+                    parameters[("C", C, "kernel_param", + kernel_param)] = np.mean(accuracies_folds)
     best_param = max(parameters.items(), key=operator.itemgetter(1))[0]
     if verbose:
         print("\tThe best set of parameters is: ", best_param)
@@ -191,7 +184,13 @@ def grid_search_ovo(X_train, y_train, dict_param, nb_folds, kernel, kernel_param
 
 
 def unit_test():
-    dict_param = {'kernel_param': [1, 2, 3], 'C': [1, 2, 3]}
+    dict_param = {'kernel': rbf_kernel,
+                  'kernel_param': [1, 2],
+                  'C': [1],
+                  'apply_pca': True,
+                  'kernel_pca': rbf_kernel,
+                  'kernel_param_pca': [0.2],
+                  'nb_components': [300]}
 
     X, y = datasets(name='clowns', n_points=200, sigma=0.7)
     clf = BinarySVM(C=np.inf, kernel=rbf_kernel, kernel_param=3.)
@@ -202,12 +201,12 @@ def unit_test():
     iris = load_iris()
     X = iris.data
     Y = iris.target
-    _, best = grid_search_ovo(X, Y, dict_param, 5, rbf_kernel)
+    _, best = grid_search_ovo(X, Y, dict_param, 5)
     print("best parameter on iris", best)
 
 if __name__ == '__main__':
-    # unit_test()
-    pass
+    unit_test()
+
 
 
 
