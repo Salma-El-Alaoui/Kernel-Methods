@@ -106,7 +106,7 @@ if train_test_val:
     print("Splitting into train and validation datasets ...")
     X_train_t, X_train_v, y_train_t, y_train_v = train_test_split(X_train, y_train, pr_train)
     print("Performing KPCA ....")
-    kpca = KernelPCA(kernel=kernel_pca, kernel_param=0.65, n_components=800)
+    kpca = KernelPCA(kernel=kernel_pca, param_kernel=0.65, n_components=800)
     X_train_kpca = kpca.fit_transform(X_train_t)
     X_test_kpca = kpca.transform(X_train_v)
     if classifier == "one_vs_one":
