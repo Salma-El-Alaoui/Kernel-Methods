@@ -1,3 +1,30 @@
+###############
+n_cells = 4, equalize=True, rgb=True. CV for gaussian kernel in both SVM and PCA.      
+
+   C =  100 kernel param =  1 kernel param for PCA =  0.6 nb_components =  300 ---- score =  0.5446
+        C =  100 kernel param =  1 kernel param for PCA =  0.8 nb_components =  300 ---- score =  0.5486
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.552
+        C =  100 kernel param =  1 kernel param for PCA =  0.6 nb_components =  500 ---- score =  0.549
+        C =  100 kernel param =  1 kernel param for PCA =  0.8 nb_components =  500 ---- score =  0.5522
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5568
+        C =  100 kernel param =  1 kernel param for PCA =  0.6 nb_components =  800 ---- score =  0.554
+        C =  100 kernel param =  1 kernel param for PCA =  0.8 nb_components =  800 ---- score =  0.5552
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  800 ---- score =  0.5556
+        C =  100 kernel param =  3 kernel param for PCA =  0.6 nb_components =  300 ---- score =  0.5688
+        C =  100 kernel param =  3 kernel param for PCA =  0.8 nb_components =  300 ---- score =  0.5678
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.5676
+        C =  100 kernel param =  3 kernel param for PCA =  0.6 nb_components =  500 ---- score =  0.5678
+        C =  100 kernel param =  3 kernel param for PCA =  0.8 nb_components =  500 ---- score =  0.569
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5722
+        C =  100 kernel param =  3 kernel param for PCA =  0.6 nb_components =  800 ---- score =  0.5634
+        C =  100 kernel param =  3 kernel param for PCA =  0.8 nb_components =  800 ---- score =  0.5624
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  800 ---- score =  0.559
+
+        The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
+
+##################
+
+
 ##################
 Laplacian SVM - Train/Test
 equalize = True

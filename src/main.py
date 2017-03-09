@@ -57,26 +57,26 @@ kernel = rbf_kernel  # or any other kernel from the kernels.py file
 kernel_pca = rbf_kernel
 classifier = "one_vs_one"
 
-cross_validation = False
+cross_validation = True
 dict_param = {'kernel': rbf_kernel, # can't be a list
-              'kernel_param': [1, 2],
-              'C': [1],
+              'kernel_param': [1, 3],
+              'C': [100],
               'apply_pca': True, # can't be a list
               'kernel_pca': rbf_kernel, # can't be a list
-              'kernel_param_pca': [0.2],
-              'nb_components': [300]}
+              'kernel_param_pca': [0.6, 0.8, 1.],
+              'nb_components': [300,500,800]}
 nb_folds = 5
 
-train_test_val = True
+train_test_val = False
 pr_train = 0.8
 
 make_submission = False
 submission_name = "test"  # suffix to submission file
 
 
-load_features = False
-path_train_load = "../features/rgb_equalize_8c_train.npy"
-path_test_load = "../features/rgb_equalize_8c_test.npy"
+load_features = True
+path_train_load = "../features/rgb_equalize_4c_train.npy"
+path_test_load = "../features/rgb_equalize_4c_test.npy"
 
 save_features = False 
 path_train_save = "../features/change_path_train"
@@ -97,7 +97,7 @@ if cross_validation:
     if classifier == "one_vs_one":
         print("Performing grid search ...")
         parameters_dic, best_parameter = grid_search_ovo(X_train=X_train, y_train=y_train, dict_param=dict_param,
-                                                         nb_folds=nb_folds, kernel=kernel)
+                                                         nb_folds=nb_folds)
     elif classifier == "crammer_singer":
         # TODO
         pass
