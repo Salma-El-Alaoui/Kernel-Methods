@@ -57,7 +57,7 @@ kernel = rbf_kernel  # or any other kernel from the kernels.py file
 kernel_pca = rbf_kernel
 classifier = "one_vs_one"
 
-cross_validation = True
+cross_validation = False
 dict_param = {'kernel': rbf_kernel, # can't be a list
               'kernel_param': [2,3,4],
               'C': [100],
@@ -70,7 +70,7 @@ nb_folds = 5
 train_test_val = False
 pr_train = 0.8
 
-make_submission = False
+make_submission = True
 submission_name = "test"  # suffix to submission file
 
 
@@ -123,10 +123,13 @@ if train_test_val:
 
 if make_submission:
     if classifier == "one_vs_one":
+        kpca = KernelPCA(kernel=kernel_pca, param_kernel=1.0, n_components=500)
+        X_train_pca = kpca.fit_transform(X_train)
+        X_test_pca = kpca.transform(X_test)
         clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
         print("Fitting classifier on all training data...")
-        clf.fit(X_train, y_train)
-        y_pred = clf.predict(X_test)
+        clf.fit(X_train_pca, y_train)
+        y_pred = clf.predict(X_test_pca)
         print("Writing submission...")
         write_submission(y_pred, submission_name)
     elif classifier == "crammer_singer":
