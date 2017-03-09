@@ -59,12 +59,12 @@ classifier = "one_vs_one"
 
 cross_validation = True
 dict_param = {'kernel': rbf_kernel, # can't be a list
-              'kernel_param': [1, 3],
+              'kernel_param': [2,3,4],
               'C': [100],
               'apply_pca': True, # can't be a list
               'kernel_pca': rbf_kernel, # can't be a list
-              'kernel_param_pca': [0.6, 0.8, 1.],
-              'nb_components': [300,500,800]}
+              'kernel_param_pca': [1.],
+              'nb_components': [400,500,600]}
 nb_folds = 5
 
 train_test_val = False

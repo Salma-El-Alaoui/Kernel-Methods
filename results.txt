@@ -22,6 +22,23 @@ n_cells = 4, equalize=True, rgb=True. CV for gaussian kernel in both SVM and PCA
 
         The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
 
+
+TRYING TO REFINE A BIT… leads to same best parameters
+
+
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.565
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5648
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5674
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.5714
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5722
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5708
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.5688
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5658
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5602
+
+        The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
+
+
 ##################
 
 
