@@ -131,7 +131,11 @@ class CrammerSingerSVM():
             predictions = np.argmax(np.dot(K,self.alpha.T), axis=1) 
         return predictions
 
-#TODO: score function
+    def score(self, X, y):
+        y_pred = self.predict(X)
+        return np.mean(y_pred == y)
+
+
 #TODO: cross validation function
 #TODO: handle kernels from kernels.py
 

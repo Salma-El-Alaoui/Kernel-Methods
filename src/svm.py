@@ -188,6 +188,7 @@ def grid_search_ovo(X_train, y_train, dict_param, nb_folds, kernel, kernel_param
         print("\tThe best set of parameters is: ", best_param)
     return parameters, best_param
 
+
 def unit_test():
     dict_param = {'kernel_param': [1, 2, 3], 'C': [1, 2, 3]}
 
