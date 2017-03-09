@@ -125,6 +125,10 @@ ENV/
 
 data/*
 
+features/*
+
+*.npy
+
 !data/.gitkeep
 
 .idea/

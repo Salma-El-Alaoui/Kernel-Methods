@@ -13,6 +13,7 @@ from kernels import rbf_kernel, linear_kernel
 from sklearn.datasets import load_iris
 import operator
 
+
 class BinarySVM:
 
     def __init__(self, C, kernel, kernel_param):
