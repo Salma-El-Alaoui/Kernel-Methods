@@ -39,8 +39,24 @@ TRYING TO REFINE A BIT… leads to same best parameters
         The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
 
 
+
 ##################
 
+no equalisation, rub, 4 cells
+
+
+
+
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.551
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5558
+        C =  100 kernel param =  2 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5534
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.5564
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.558
+        C =  100 kernel param =  3 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.555
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  400 ---- score =  0.5532
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5504
+        C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5462
+        The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
 
 ##################
 Laplacian SVM - Train/Test

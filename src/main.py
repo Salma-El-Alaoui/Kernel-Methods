@@ -48,7 +48,7 @@ def load_hog_features(rgb=False, equalize=True, yuv=False, n_cells_hog=8):
 # TODO: encapsulate all of the following in a function to be put in main
 
 # define some flags
-equalize = True
+equalize = False
 rgb = True  # whether or not to consider 3 different channels (if false, mean of 3 channels)
 n_cells_hog = 4
 yuv = False
@@ -57,7 +57,7 @@ kernel = rbf_kernel  # or any other kernel from the kernels.py file
 kernel_pca = rbf_kernel
 classifier = "one_vs_one"
 
-cross_validation = False
+cross_validation = True
 dict_param = {'kernel': rbf_kernel, # can't be a list
               'kernel_param': [2,3,4],
               'C': [100],
@@ -70,17 +70,17 @@ nb_folds = 5
 train_test_val = False
 pr_train = 0.8
 
-make_submission = True
+make_submission = False
 submission_name = "test"  # suffix to submission file
 
 
-load_features = True
+load_features = False
 path_train_load = "../features/rgb_equalize_4c_train.npy"
 path_test_load = "../features/rgb_equalize_4c_test.npy"
 
-save_features = False 
-path_train_save = "../features/change_path_train"
-path_test_save ="../features/change_path_test"
+save_features = True 
+path_train_save = "../features/rgb_notequalize_4c_train"
+path_test_save ="../features/rgb_notequalize_4c_test"
 
 
 if load_features:
