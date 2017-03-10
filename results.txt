@@ -39,6 +39,21 @@ TRYING TO REFINE A BIT… leads to same best parameters
         The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
 
 
+##################
+equalize, rgb, laplacian, laplacian
+4 cells
+
+        C =  100 kernel param =  0.5 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.529
+        C =  100 kernel param =  0.5 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5428
+        C =  100 kernel param =  0.5 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.3502
+        C =  100 kernel param =  1.0 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5484
+        C =  100 kernel param =  1.0 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5568
+        C =  100 kernel param =  1.0 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.3408
+        C =  100 kernel param =  5.0 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5638
+        C =  100 kernel param =  5.0 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5572
+        C =  100 kernel param =  5.0 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.3142
+        The best set of parameters is:  ('C', 100, 'kernel_param', 5.0, 'kernel_param_pca', 0.5, 'nb_components', 500)
+
 
 ##################
 
@@ -57,6 +72,23 @@ no equalisation, rub, 4 cells
         C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5504
         C =  100 kernel param =  4 kernel param for PCA =  1.0 nb_components =  600 ---- score =  0.5462
         The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
+
+##################
+without equalisation, n cells = 4, both gaussian
+
+        C =  100 kernel param =  1 kernel param for PCA =  0.5 nb_components =  300 ---- score =  0.5384
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.5396
+        C =  100 kernel param =  1 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5442
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5448
+        C =  100 kernel param =  1 kernel param for PCA =  0.5 nb_components =  700 ---- score =  0.549
+        C =  100 kernel param =  1 kernel param for PCA =  1.0 nb_components =  700 ---- score =  0.5502
+        C =  100 kernel param =  5 kernel param for PCA =  0.5 nb_components =  300 ---- score =  0.556
+        C =  100 kernel param =  5 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.5534
+        C =  100 kernel param =  5 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5454
+        C =  100 kernel param =  5 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.54
+        C =  100 kernel param =  5 kernel param for PCA =  0.5 nb_components =  700 ---- score =  0.5392
+        C =  100 kernel param =  5 kernel param for PCA =  1.0 nb_components =  700 ---- score =  0.5288
+        The best set of parameters is:  ('C', 100, 'kernel_param', 5, 'kernel_param_pca', 0.5, 'nb_components', 300)
 
 ##################
 Laplacian SVM - Train/Test
