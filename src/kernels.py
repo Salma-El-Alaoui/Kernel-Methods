@@ -64,7 +64,7 @@ def euclidean_dist(X, Y):
     return np.abs(norms_1.reshape(-1, 1) + norms_2 - 2 * np.dot(X, Y.T))
 
 
-def rbf_kernel(X, Y, gamma):
+def rbf_kernel(X, Y, gamma=1.):
     dists = euclidean_dist(X, Y)
     return np.exp(-gamma * dists)
 
@@ -76,7 +76,6 @@ def laplacian_kernel(X,Y, sigma=1):
 
 def mother_wavelet(X):
     return np.cos(1.75 * X) * np.exp(-X ** 2)
-
 
 def simple_wavelet_kernel(X, Y, param=0):
     mat= mother_wavelet((X-Y)/param)

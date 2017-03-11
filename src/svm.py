@@ -167,7 +167,7 @@ def grid_search_ovo(X_train, y_train, dict_param, nb_folds, verbose=True):
                 for kernel_param_pca in dict_param['kernel_param_pca']:
                     accuracies_folds = list()
                     for X_train_train, y_train_train, X_valid, y_valid in cross_validation(X_train, y_train, nb_folds):
-                        kpca = KernelPCA(kernel=dict_param['kernel_pca'], param_kernel=kernel_param_pca, n_components=nb_components)
+                        kpca = KernelPCA(kernel=dict_param['kernel_pca'], param_kernel=kernel_param_pca, n_components=nb_components, apply=dict_param['apply_pca'])
                         X_train_train = kpca.fit_transform(X_train_train)
                         X_valid = kpca.transform(X_valid)
                         clf = OneVsOneSVM(C=C, kernel=dict_param['kernel'], kernel_param=kernel_param)
