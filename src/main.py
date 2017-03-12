@@ -7,8 +7,7 @@ from kernels import simple_wavelet_kernel, rbf_kernel, laplacian_kernel, linear_
 import numpy as np
 from KernelPCA import KernelPCA
 from crammer_singer_svm import CrammerSingerSVM, grid_search_crammer_singer
-
-
+import time
 
 
 
@@ -22,12 +21,12 @@ rgb = True  # whether or not to consider 3 different channels (if false, mean of
 n_cells_hog = 4
 yuv = False
 
-kernel = linear_kernel  # or any other kernel from the kernels.py file
-kernel_pca =  linear_kernel
-classifier = "one_vs_one"
-#classifier = "crammer_singer"
+kernel = rbf_kernel  # or any other kernel from the kernels.py file
+kernel_pca =  rbf_kernel
+#classifier = "one_vs_one"
+classifier = "crammer_singer"
 
-cross_validation = True
+cross_validation = False
 dict_param = {'kernel': laplacian_kernel, # can't be a list
               'kernel_param': [0.1,0.5,1.,5.],
               'C': [100,1000],
@@ -40,7 +39,7 @@ nb_folds = 5
 train_test_val = False
 pr_train = 0.8
 
-make_submission = False
+make_submission = True
 submission_name = "test"  # suffix to submission file
 
 
@@ -100,11 +99,17 @@ if make_submission:
         clf = OneVsOneSVM(C=100, kernel=kernel, kernel_param=3)
     elif classifier == "crammer_singer":
         clf = CrammerSingerSVM(C=0.016, kernel=linear_kernel, param_kernel=None)
+    time_fit = time.time()
     clf.fit(X_train_pca, y_train)
+    time_fit_end = time.time()
     y_pred = clf.predict(X_test_pca)
+    time_predict_end = time.time()
     print("Writing submission...")
     write_submission(y_pred, submission_name)
 
+    print("Time fit SVM ", time_fit_end - time_fit)
+    print("Time predict SVM ", time_predict_end - time_fit_end)
+    
 if save_features:
     np.save(path_train_save, X_train)
     np.save(path_test_save, X_test)

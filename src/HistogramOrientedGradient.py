@@ -6,8 +6,6 @@ Created on Fri Mar  3 18:19:43 2017
 @author: camillejandot
 """
 import numpy as np
-from scipy.misc import imresize, imread
-from image_utils import vec_to_img
 
 
 class HistogramOrientedGradient():
