@@ -110,7 +110,19 @@ equalize, rgb, laplacian, laplacian
 
 
 ##################
+equalize, rgb, pca linear, svm laplacian
 
+        C =  100 kernel param =  0.1 kernel param for PCA =  0 nb_components =  500 ---- score =  0.1012
+        C =  100 kernel param =  0.5 kernel param for PCA =  0 nb_components =  500 ---- score =  0.545
+        C =  100 kernel param =  1.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5482
+        C =  100 kernel param =  5.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5416
+        C =  1000 kernel param =  0.1 kernel param for PCA =  0 nb_components =  500 ---- score =  0.1012
+        C =  1000 kernel param =  0.5 kernel param for PCA =  0 nb_components =  500 ---- score =  0.545
+        C =  1000 kernel param =  1.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5482
+        C =  1000 kernel param =  5.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5416
+        The best set of parameters is:  ('C', 100, 'kernel_param', 1.0, 'kernel_param_pca', 0, 'nb_components', 500)
+
+#################
 no equalisation, rub, 4 cells
 
 

@@ -60,8 +60,8 @@ classifier = "one_vs_one"
 #classifier = "crammer_singer"
 
 cross_validation = True
-dict_param = {'kernel': rbf_kernel, # can't be a list
-              'kernel_param': [0.1,0.5,1.],
+dict_param = {'kernel': laplacian_kernel, # can't be a list
+              'kernel_param': [0.1,0.5,1.,5.],
               'C': [100,1000],
               'apply_pca': True, # can't be a list
               'kernel_pca': linear_kernel, # can't be a list
