@@ -117,7 +117,7 @@ def write_submission(y_pred, submission_suffix):
     cols = df.columns.tolist()
     cols = cols[-1:] + cols[0:-1]
     df = df[cols]
-    file_name = "../submissions/submission_" + submission_suffix + ".csv"
+    file_name = "../submissions/" + submission_suffix + ".csv"
     df.to_csv(file_name, index=False)
 
 
