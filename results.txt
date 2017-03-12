@@ -1,4 +1,26 @@
 ###############
+n_cells = 4, equalize=True, rgb=True. CV for laplacian kernel in PCA and rbf_kernel for SVM
+
+        C =  10 kernel param =  0.5 kernel param for PCA =  0.5 nb_components =  300 ---- score =  0.5262
+        C =  10 kernel param =  0.5 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.5282
+        C =  10 kernel param =  0.5 kernel param for PCA =  5.0 nb_components =  300 ---- score =  0.5146
+        C =  10 kernel param =  0.5 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.533
+        C =  10 kernel param =  0.5 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5374
+        C =  10 kernel param =  0.5 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.5276
+        C =  10 kernel param =  1.0 kernel param for PCA =  0.5 nb_components =  300 ---- score =  0.5286
+        C =  10 kernel param =  1.0 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.534
+        C =  10 kernel param =  1.0 kernel param for PCA =  5.0 nb_components =  300 ---- score =  0.5208
+        C =  10 kernel param =  1.0 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5188
+        C =  10 kernel param =  1.0 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.537
+        C =  10 kernel param =  1.0 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.5318
+        C =  10 kernel param =  5.0 kernel param for PCA =  0.5 nb_components =  300 ---- score =  0.5288
+        C =  10 kernel param =  5.0 kernel param for PCA =  1.0 nb_components =  300 ---- score =  0.567
+        C =  10 kernel param =  5.0 kernel param for PCA =  5.0 nb_components =  300 ---- score =  0.5502
+        C =  10 kernel param =  5.0 kernel param for PCA =  0.5 nb_components =  500 ---- score =  0.5076
+        C =  10 kernel param =  5.0 kernel param for PCA =  1.0 nb_components =  500 ---- score =  0.5496
+        C =  10 kernel param =  5.0 kernel param for PCA =  5.0 nb_components =  500 ---- score =  0.5538
+
+###############
 n_cells = 4, equalize=True, rgb=True. CV for gaussian kernel in both SVM and PCA.      
 
    C =  100 kernel param =  1 kernel param for PCA =  0.6 nb_components =  300 ---- score =  0.5446
