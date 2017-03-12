@@ -39,30 +39,7 @@ class HistogramOrientedGradient():
         orientation_deg = (orientation_rad * 180 / (2 * np.pi)) % 360
         return orientation_deg
 
-    #    def _bilinear_interpolation(self):
-    #        cell_size = self.cell_size
-    #        aux = np.zeros((cell_size,cell_size))
-    #        for i in range(cell_size):
-    #            for j in range(cell_size):
-    #                aux[i,j] = (cell_size - i - 0.5)*(cell_size - j - 0.5)/16.
-    #        print("aux", aux)
-    #        coefs = np.zeros((2*cell_size,2*cell_size))
-    #
-    #        coefs[cell_size:,cell_size:] = aux
-    #        aux_90 = np.rot90(aux)
-    #        coefs[:cell_size,cell_size:] = aux_90
-    #        aux_180 = np.rot90(aux_90)
-    #        coefs[:cell_size,:cell_size] = aux_180
-    #        aux_270 = np.rot90(aux_180)
-    #        coefs[cell_size:,:cell_size] = aux_270
-    #
-    #        coefs_for_image = np.zeros((self.img_size + cell_size,self.img_size + cell_size))
-    #        for i in range(0,len(coefs_for_image)-cell_size,cell_size):
-    #            for j in range(0,len(coefs_for_image)-cell_size,cell_size):
-    #                coefs_for_image[i:i + 2*cell_size,j:j + 2*cell_size] += coefs
-    #        print(coefs)
-    #        return coefs, coefs_for_image
-    #
+
     def _orientation_interpolation(self, orientation):
         n_bins = self.n_bins
         if self.signed:
@@ -91,23 +68,7 @@ class HistogramOrientedGradient():
                 average[ind_i, ind_j, :] = img[i:i + self.cell_size, j:j + self.cell_size, :].mean(axis=0).mean(axis=0)
         return average
 
-    #    def _raw_histogram(self):
-    #                # For testing purpose
-    #        n_cells = self.n_cells
-    #        n_bins = self.n_bins
-    #        orientation = np.ones((32,32))*47
-    #        magnitude = np.ones((32,32))
-    #        orientation_interpolation = self._orientation_interpolation(orientation)
-    #        to_multiply_little = magnitude[:,:,np.newaxis] * orientation_interpolation
-    #        to_multiply_pad = np.zeros((36,36,18))
-    #        to_multiply_pad[2:-2,2:-2,:] = to_multiply_little
-    #        tableau = np.zeros((n_cells,n_cells,n_bins))
-    #        coefs,_ = self._bilinear_interpolation()
-    #        for i in range(n_cells):
-    #            for j in range(n_cells):
-    #                mult = coefs[:,:,np.newaxis] * to_multiply_pad[4*i:4*i+8,4*j:4*j+8,:]
-    #                tableau[i,j,:] =mult.sum(axis = 0).sum(axis=0)
-    #        return tableau
+
 
     def _normalize_histogram(self, raw_histogram):
         pass
@@ -150,12 +111,4 @@ class HistogramOrientedGradient():
 
         return feat
 
-# interp = hog._bilinear_interpolation()
-# plt.figure()
-# plt.imshow(interp)
-# print(interp[10:15,10:15])
-# print(hog._raw_histogram()[2:6,2:6,:8])
-# orientation = np.ones((32,32))*47
-# print(np.unique(hog._bilinear_interpolation().flatten()).shape)
-# print(hog._orientation_interpolation(orientation)[0,0,:])
-# %%
+

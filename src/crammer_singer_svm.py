@@ -35,8 +35,6 @@ class CrammerSingerSVM():
         self.kernel = kernel
 
     def _gradi(self, X, y, i):
-        # TODO: replace here x_i^x_j by k(x_i, x_j) for a non-linear kernel (I think do the update using alpha instead of
-        # W, but not sure (equation 4 in the paper)
         g = np.dot(self.alpha, self.K[:,i]) + 1
         g[y[i]] -= 1
         return g
@@ -66,7 +64,6 @@ class CrammerSingerSVM():
         n_classes = len(np.unique(y))
         self.alpha = np.zeros((n_classes, n_samples), dtype=np.float64)
         self.W = np.zeros((n_classes, n_features))
-        # TODO non-linear kernel: replace ||x_i||^2 by k(x_i, x_i) (equation 6 in the paper)
         norms = np.zeros(len(X))
         K = self.kernel(X,X, self.param_kernel)
         self.K = K

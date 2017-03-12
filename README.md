@@ -1,6 +1,6 @@
 # Kernel-Methods
 Project for the course Kernel Methods for Machine Learning. 
-Report : SACAJU_Data_Sciences_Achddou_ElAlaoui_Jandot.pdf
+Report : report_SACAJU_Data_Sciences_Achddou_ElAlaoui_Jandot.pdf
 
 # Data 
 Data must be placed in the 'data' folder.
