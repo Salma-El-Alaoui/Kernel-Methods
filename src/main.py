@@ -9,12 +9,8 @@ from KernelPCA import KernelPCA
 from crammer_singer_svm import CrammerSingerSVM, grid_search_crammer_singer
 import time
 
-
-
-
-# TODO: encapsulate all of the following in a function to be put in main
-
 # define some flags
+
 signed = True
 equalize = True
 rgb = True  # whether or not to consider 3 different channels (if false, mean of 3 channels)
@@ -23,23 +19,25 @@ yuv = False
 
 kernel = rbf_kernel  # or any other kernel from the kernels.py file
 kernel_pca =  rbf_kernel
-#classifier = "one_vs_one"
-classifier = "crammer_singer"
+classifier = "one_vs_one" #or classifier = "crammer_singer"
 
-cross_validation = False
+# In order to perform cross-validation
+cross_validation = True
 dict_param = {'kernel': laplacian_kernel, # can't be a list
-              'kernel_param': [0.1,0.5,1.,5.],
-              'C': [100,1000],
+              'kernel_param': [3, 2, 1],
+              'C': [100, 200],
               'apply_pca': True, # can't be a list
               'kernel_pca': linear_kernel, # can't be a list
-              'kernel_param_pca': [0], #[0.1,1.,10.],
+              'kernel_param_pca': [0.5, 1.],
               'nb_components': [500]}
 nb_folds = 5
 
+# In order to perform testing on a validation data set
 train_test_val = False
 pr_train = 0.8
 
-make_submission = True
+# In order to make a submission
+make_submission = False
 submission_name = "test"  # suffix to submission file
 
 
