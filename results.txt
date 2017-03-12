@@ -83,6 +83,17 @@ equalize, rgb, pra: gaussian, sam: linear
         C =  100 kernel param =  0 kernel param for PCA =  10 nb_components =  500 ---- score =  0.1
 
 ##################
+equalize, rgb, pca: linear, svm : gaussian
+
+        C =  100 kernel param =  0.1 kernel param for PCA =  0 nb_components =  500 ---- score =  0.4826
+        C =  100 kernel param =  0.5 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5382
+        C =  100 kernel param =  1.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5538
+        C =  1000 kernel param =  0.1 kernel param for PCA =  0 nb_components =  500 ---- score =  0.4776
+        C =  1000 kernel param =  0.5 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5384
+        C =  1000 kernel param =  1.0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5536
+        The best set of parameters is:  ('C', 100, 'kernel_param', 1.0, 'kernel_param_pca', 0, 'nb_components', 500)
+
+##################
 equalize, rgb, laplacian, laplacian
 4 cells
 
