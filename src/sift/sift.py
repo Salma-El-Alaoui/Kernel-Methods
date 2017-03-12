@@ -5,21 +5,27 @@ Created on Wed Feb 22 09:44:22 2017
 
 @author: camillejandot
 """
-
+import sys
+import os
 from scipy.misc import imresize,imread
-from equalization import equalize_item
 from HarrisCorner import HarrisCorner
 from EdgeDetection import EdgeDetection
 from LowContrast import LowContrast
 from FindExtrema import FindExtrema
 from Pyramid import Pyramid
 from reference_orientation import ReferenceOrientation
-from image_utils import load_data
 import numpy as np
 import matplotlib.pyplot as plt
 from ComputeDescriptors import ComputeDescriptors
 import time
-#%%
+
+
+PACKAGE_PARENT = '..'
+SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
+sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
+from data_utils import load_data
+from  equalization import equalize_item
+
 class Sift():
      
     def __init__(self, interp_size=128, thresh_contrast=2., thresh_corner=0.1):
@@ -63,7 +69,7 @@ class Sift():
                     idx_corners_x, idx_corners_y = [i[0] for i in idx_corners], [i[1] for i in idx_corners]
                     idx_edges_x, idx_edges_y = [i[0] for i in edges], [i[1] for i in edges]
                     idx_contr_x, idx_contr_y = [i[0] for i in contrast], [i[1] for i in contrast]
-                     #corners in blue, edges in red, low contrast points i  green
+                    #corners in blue, edges in red, low contrast points i  green
                     s = 2 * 2**o #0.8* 2**o
                     plt.scatter(idx_edges_y,idx_edges_x, marker='o', c='r', s=s)
                     plt.scatter(idx_contr_y, idx_contr_x, marker='o', c='g', s=s)
@@ -90,58 +96,6 @@ class Sift():
 
         print(".................Done Computing keypoints")
         return pyramid, extrema_flat
-       
-            
-#%%               
-if __name__ == '__main__':
 
-    #X_train, X_test, y_train = load_data()
-    id_img =  80
-    image = X_train[id_img]
-#    test_zz = imread('carre.jpg')
-#    print (test_zz[:,:,0].shape)
-#    image = np.zeros(32*32*3)
-#    image[:1024] = imresize(test_zz[:,:,0],(32,32)).reshape(32*32)
-#    image[1024:2048] = imresize(test_zz[:,:,1],(32,32)).reshape(32*32)
-#    image[2048:] = imresize(test_zz[:,:,2],(32,32)).reshape(32*32)
-    time_init = time.time()
-    sift = Sift(thresh_contrast=0.3, thresh_corner =0.9)
-    pyramid, extrema_flat = sift.perform_sift(image, verbose=True)
-    #%%
-    ref = ReferenceOrientation(pyramid)
-    gradient = ref.gradient()
-    count = 0
-    count_points = 0
-    #sum_hist = np.zeros(36)
-    keypoints = []
-    output_sift=[]
-    for i, ext in enumerate(extrema_flat):
-        #print(i)
-        #print ("keypoint")
-        if ref._is_inborder(ext):
-            count_points += 1
-            
-            keypoint = ref.get_histogram(ext, gradient)
-            
-            #hist = ref.get_histogram(ext, gradient)
-            #if len(hist[hist!=0]) == 0:
-            #    count += 1
-            if keypoint != []:
-                comp0 = ComputeDescriptors(pyramid)
-                if comp0.is_in_border(keypoint[0]):
-                    comp = comp0.build_keypoint_descriptor(keypoint[0],gradient)
-                    #print(len(comp))
-                    #print ("comp ",comp)
-                    if len(comp[comp!=0])!=0:
-                        print (len(comp[comp!=0]))
-                        print('0? ', )
-                        output_sift.append(comp)
-                        
-    print(time.time()-time_init)
-    #print("keypoints ",keypoints)    
-    # Load toy image
-    #test_zz = imread('test.jpg')
-    #test_zz = imresize(test_zz,(256,256,3)).mean(axis=-1)
-    
 
 
