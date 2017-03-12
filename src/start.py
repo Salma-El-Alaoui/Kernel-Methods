@@ -25,11 +25,10 @@ classifier = "one_vs_one"
 
 submission_name = "Yte"
 
-
 print("Computing Features...")
 X_train, X_test, y_train = load_hog_features(rgb=rgb, equalize=equalize, n_cells_hog=n_cells_hog)
 
-print("Performing k-PCA")
+print("Performing k-PCA...")
 kpca = KernelPCA(kernel=kernel_pca, param_kernel=1.0, n_components=500)
 X_train_pca = kpca.fit_transform(X_train)
 X_test_pca = kpca.transform(X_test)
