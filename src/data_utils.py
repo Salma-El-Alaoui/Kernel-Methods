@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from HistogramOrientedGradient import HistogramOrientedGradient
+from equalization import equalize_item
+from image_utils import vec_to_img, rgb_to_opprgb
 
 
 def datasets(name, n_points, sigma=None):
@@ -125,3 +128,35 @@ def train_test_split(X, y, pr_train):
     y_train_t = y[:n_train]
     y_train_v = y[n_train:]
     return X_train_t, X_train_v, y_train_t, y_train_v
+
+def load_hog_features(rgb=False, equalize=True, yuv=False, n_cells_hog=8,signed=True):
+    data_train, data_test, y_train = load_data()
+    
+    hist_train = []
+    hog = HistogramOrientedGradient(n_cells=n_cells_hog,cell_size=int(32./n_cells_hog))   
+
+    for id_img in range(len(data_train)):
+        image = data_train[id_img]
+        if equalize:
+            img = equalize_item(image, rgb=rgb, verbose=False)
+        elif yuv:
+            img = rgb_to_opprgb(image)
+        else:
+            img = vec_to_img(image, rgb=rgb)
+        hist_train.append(hog._build_histogram(img))
+    hist_test = []
+    
+    for id_img in range(len(data_test)):
+        image = data_test[id_img]
+        if equalize:
+
+            img = equalize_item(image, rgb=rgb,verbose=False)
+        elif yuv:
+            img = rgb_to_opprgb(image)
+        else:
+            img = vec_to_img(image, rgb=rgb)
+        hist_test.append(hog._build_histogram(img))
+    X_train = np.array(hist_train)
+    X_test = np.array(hist_test)
+    print("\thog features loaded")
+    return X_train, X_test, y_train
