@@ -20,4 +20,13 @@ with the parameters that were selected with cross validation (cf. main.py for fu
 - HistogramOrientedGradients.py: to compute the HOG descriptors
 
 # Other files
-We tried to implement SIFT, but unfortunately, we could not make it work in time (SIFT folder)
+We tried to implement SIFT, but unfortunately, we could not make it work in time. The related files are:
+- Pyramid.py
+- FindExtrema.py
+- EdgeDetection.py
+- HarrisCorner.py
+- reference_orientation.py
+- ComputeDescriptors.py
+- sift.py
+- KMeans.py
+- BagOfFeatures.py
