@@ -60,12 +60,12 @@ classifier = "one_vs_one"
 #classifier = "crammer_singer"
 
 cross_validation = True
-dict_param = {'kernel': linear_kernel, # can't be a list
-              'kernel_param': [0], #[0.5,0.6,0.7],
-              'C': [10,100],
+dict_param = {'kernel': rbf_kernel, # can't be a list
+              'kernel_param': [0.1,0.5,1.],
+              'C': [100,1000],
               'apply_pca': True, # can't be a list
-              'kernel_pca': rbf_kernel, # can't be a list
-              'kernel_param_pca': [0.1,1,10], #[0.5,1.,5.],
+              'kernel_pca': linear_kernel, # can't be a list
+              'kernel_param_pca': [0], #[0.1,1.,10.],
               'nb_components': [500]}
 nb_folds = 5
 
