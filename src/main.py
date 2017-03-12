@@ -54,19 +54,19 @@ rgb = True  # whether or not to consider 3 different channels (if false, mean of
 n_cells_hog = 4
 yuv = False
 
-kernel = laplacian_kernel  # or any other kernel from the kernels.py file
-kernel_pca = laplacian_kernel
-#classifier = "one_vs_one"
-classifier = "crammer_singer"
+kernel = linear_kernel  # or any other kernel from the kernels.py file
+kernel_pca =  linear_kernel
+classifier = "one_vs_one"
+#classifier = "crammer_singer"
 
 cross_validation = True
 dict_param = {'kernel': linear_kernel, # can't be a list
               'kernel_param': [0], #[0.5,0.6,0.7],
-              'C': [1,10,100,1000],
+              'C': [10,100],
               'apply_pca': True, # can't be a list
-              'kernel_pca': linear_kernel, # can't be a list
-              'kernel_param_pca': [0], #[0.5,1.,5.],
-              'nb_components': [300,500,700]}
+              'kernel_pca': rbf_kernel, # can't be a list
+              'kernel_param_pca': [0.1,1,10], #[0.5,1.,5.],
+              'nb_components': [500]}
 nb_folds = 5
 
 train_test_val = False

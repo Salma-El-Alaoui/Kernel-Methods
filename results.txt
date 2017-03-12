@@ -51,6 +51,16 @@ equalize, rgb, linear, linear
         C =  100 kernel param =  0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.4174
         C =  100 kernel param =  0 kernel param for PCA =  0 nb_components =  700 ---- score =  0.4178
 ##################
+equalize, rgb, pra: gaussian, sam: linear
+
+        C =  10 kernel param =  0 kernel param for PCA =  0.1 nb_components =  500 ---- score =  0.5038
+        C =  10 kernel param =  0 kernel param for PCA =  1 nb_components =  500 ---- score =  0.5282
+        C =  10 kernel param =  0 kernel param for PCA =  10 nb_components =  500 ---- score =  0.1
+        C =  100 kernel param =  0 kernel param for PCA =  0.1 nb_components =  500 ---- score =  0.465
+        C =  100 kernel param =  0 kernel param for PCA =  1 nb_components =  500 ---- score =  0.5042
+        C =  100 kernel param =  0 kernel param for PCA =  10 nb_components =  500 ---- score =  0.1
+
+##################
 equalize, rgb, laplacian, laplacian
 4 cells
 
