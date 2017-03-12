@@ -1,8 +1,12 @@
 # Kernel-Methods
-Project for the course Kernel Methods for Machine Learning
+Project for the course Kernel Methods for Machine Learning. 
+Report : SACAJU_Data_Sciences_Achddou_ElAlaoui_Jandot.pdf
+
+# Data 
+Data must be placed in the 'data' folder.
 
 # How to reproduce our result (src/start.py)
-Just run the file start.py, in the src folder. 
+Just run the file start.py, in the src folder. It will create a Yte.csv file in the 'submissions' folder.
 It will compute the HOG features, perform a Kernel PCA and a SVM (with Kernel),
 with the parameters that were selected with cross validation (cf. main.py for further details).
 
