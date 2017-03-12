@@ -38,7 +38,18 @@ TRYING TO REFINE A BIT… leads to same best parameters
 
         The best set of parameters is:  ('C', 100, 'kernel_param', 3, 'kernel_param_pca', 1.0, 'nb_components', 500)
 
+##################
+equalize, rgb, linear, linear
 
+        C =  1 kernel param =  0 kernel param for PCA =  0 nb_components =  300 ---- score =  0.4962
+        C =  1 kernel param =  0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.5002
+        C =  1 kernel param =  0 kernel param for PCA =  0 nb_components =  700 ---- score =  0.5
+        C =  10 kernel param =  0 kernel param for PCA =  0 nb_components =  300 ---- score =  0.4676
+        C =  10 kernel param =  0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.4608
+        C =  10 kernel param =  0 kernel param for PCA =  0 nb_components =  700 ---- score =  0.4632
+        C =  100 kernel param =  0 kernel param for PCA =  0 nb_components =  300 ---- score =  0.4146
+        C =  100 kernel param =  0 kernel param for PCA =  0 nb_components =  500 ---- score =  0.4174
+        C =  100 kernel param =  0 kernel param for PCA =  0 nb_components =  700 ---- score =  0.4178
 ##################
 equalize, rgb, laplacian, laplacian
 4 cells

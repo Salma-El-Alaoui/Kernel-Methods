@@ -43,7 +43,7 @@ def plot_histograms(hist,hist_after_eq):
     
     plt.show()
     
-def equalize_item(item,rgb=False,verbose=False):
+def equalize_item(item,rgb=False,verbose=False,report=False):
     img = np.zeros((32,32,3))
 
     img[:,:,0] = item[:1024].reshape(32,32)
@@ -71,10 +71,16 @@ def equalize_item(item,rgb=False,verbose=False):
         if verbose:
             plt.figure()
             plt.imshow(img_grey,cmap='gray',interpolation=None)
-            plt.title('Before equalization (grayscale)')
+            if report:
+                plt.axis('off')
+            if not report:
+                plt.title('Before equalization (grayscale)')
             plt.figure()
             plt.imshow(eq_img_grey,cmap='gray',interpolation=None)
-            plt.title('After equalization (grayscale)')
+            if report:
+                plt.axis('off')
+            if not report:
+                plt.title('After equalization (grayscale)')
             
         return eq_img_grey
     

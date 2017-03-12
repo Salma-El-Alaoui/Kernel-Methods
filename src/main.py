@@ -3,7 +3,7 @@ from equalization import equalize_item
 from data_utils import load_data, train_test_split, write_submission
 from image_utils import vec_to_img,rgb_to_yuv,yuv_to_rgb,rgb_to_opprgb
 from svm import OneVsOneSVM, grid_search_ovo
-from kernels import simple_wavelet_kernel, rbf_kernel, laplacian_kernel
+from kernels import simple_wavelet_kernel, rbf_kernel, laplacian_kernel, linear_kernel
 import numpy as np
 from scipy.misc import imresize
 from KernelPCA import KernelPCA
@@ -59,13 +59,13 @@ kernel_pca = laplacian_kernel
 classifier = "one_vs_one"
 
 cross_validation = True
-dict_param = {'kernel': rbf_kernel, # can't be a list
-              'kernel_param': [0.5,0.6,0.7],
-              'C': [100],
+dict_param = {'kernel': linear_kernel, # can't be a list
+              'kernel_param': [0], #[0.5,0.6,0.7],
+              'C': [1,10,100,1000],
               'apply_pca': True, # can't be a list
-              'kernel_pca': rbf_kernel, # can't be a list
-              'kernel_param_pca': [0.5,1.,5.],
-              'nb_components': [500]}
+              'kernel_pca': linear_kernel, # can't be a list
+              'kernel_param_pca': [0], #[0.5,1.,5.],
+              'nb_components': [300,500,700]}
 nb_folds = 5
 
 train_test_val = False
