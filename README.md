@@ -1,5 +1,8 @@
 # Kernel-Methods
 Project for the course Kernel Methods for Machine Learning. 
+
+In this challenge, we tackled the task of classifying 32x32 pixel images, belonging to 10 different classes using kernel-methods. 
+
 Report : report_SACAJU_Data_Sciences_Achddou_ElAlaoui_Jandot.pdf
 
 # Data 
